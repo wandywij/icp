@@ -26,10 +26,10 @@ public class Departemen implements Serializable{
     @Column(name = "id", unique = true, nullable = false, length = 20)
     private Integer id;
     
-    @Column(name = "id_departemen", unique = true, nullable = false, length = 10)
+    @Column(name = "id_departemen", unique = true, nullable = false, length = 25)
     private String id_departemen;
     
-    @Column(name = "nama_departemen", nullable = false, length = 25)
+    @Column(name = "nama_departemen", nullable = false, length = 100)
     private String nama_departemen;
     
     public Departemen()
