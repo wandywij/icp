@@ -5,6 +5,10 @@
  */
 package com.icp.icp;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import modelDatabase.Departemen;
 import modelDatabase.hibernateUtil;
@@ -26,8 +30,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class DepartemenController {
     private String prefix = "Dept";
     @RequestMapping(value="departemen/input", method = RequestMethod.GET)
-    public String insert()
+    public String loadAll(ModelMap model)
     {
+        Session session = hibernateUtil.getSessionFactory().openSession();
+        Criteria criteria = session.createCriteria(Departemen.class);
+        List<Departemen> departemens = criteria.list();
+        //List<penjualan> lData = criteria.list();
+        List dataShow = new ArrayList();
+        for(Departemen departemen : departemens)
+        {
+            Map<String, String> result = new HashMap<String, String>();
+            result.put("nama_departemen", departemen.getNama_departemen());
+            result.put("id_departemen", departemen.getId_departemen());
+            dataShow.add(result);
+        }
+        model.addAttribute("departemens", dataShow);
+        //model.addAttribute("dataList", dataShow);
+        session.close();
         return "departemen";
     }
     

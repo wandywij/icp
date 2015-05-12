@@ -33,8 +33,8 @@ public class KaryawanController {
         return "karyawan";
     }
     
-    @RequestMapping(value="karyawan", method = RequestMethod.GET)
-    public String load()
+    @RequestMapping(value={"karyawan", ""}, method = RequestMethod.GET)
+    public String loadAll()
     {
         return "daftar_karyawan";
     }
