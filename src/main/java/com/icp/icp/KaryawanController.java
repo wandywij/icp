@@ -64,8 +64,16 @@ public class KaryawanController {
         Session session = hibernateUtil.getSessionFactory().openSession();
         Criteria criteria = session.createCriteria(Karyawan.class);
         List<Karyawan> karyawans = criteria.list();
-        Karyawan karyawan = new Karyawan();
-        List dataShow = karyawan.getAllKaryawan(karyawans);
+//        Karyawan karyawan = new Karyawan();
+//        List dataShow = karyawan.getAllKaryawan(karyawans);
+//        model.addAttribute("karyawans", dataShow);
+        List dataShow = new ArrayList();
+        for(Karyawan karyawan : karyawans)
+        {
+            Map<String, String> result = karyawan.getKaryawan(karyawan);
+            
+            dataShow.add(result);            
+        }
         model.addAttribute("karyawans", dataShow);
         session.close();
         return "daftar_karyawan";

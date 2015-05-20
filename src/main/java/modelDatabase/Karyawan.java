@@ -11,11 +11,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.springframework.ui.ModelMap;
 
@@ -57,6 +59,18 @@ public class Karyawan implements Serializable{
     
     @Column(name = "keterangan", unique = false, nullable = true, length = 500)
     private String keterangan;
+    
+    @OneToMany(mappedBy = "karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Kontrak> kontrak;
+
+    public List<Kontrak> getKontrak() {
+        return kontrak;
+    }
+
+    public void setKontrak(List<Kontrak> kontrak) {
+        this.kontrak = kontrak;
+    }
+    
     
     public Karyawan() {}
 
@@ -149,14 +163,33 @@ public class Karyawan implements Serializable{
 //        return kontrak;
 //    }
     
+    public Map<String, String> getKaryawan(Karyawan karyawan)
+    {
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("nama_karyawan", karyawan.getNama());
+        int i = karyawan.getKontrak().size() - 1;
+        if(i >= 0)
+        {           
+            result.put("kontrak_mulai", karyawan.getKontrak().get(i).
+                    getTanggal_mulai().toString());
+            result.put("kontrak_berakhir", karyawan.getKontrak().get(i).
+                    getTanggal_berakhir().toString());
+        }
+        else
+        {
+            result.put("kontrak_mulai", "12/08/211");
+            result.put("kontrak_berakhir", "12/09/10");
+        }
+        return result;
+    }
+    
     public List getAllKaryawan(List<Karyawan> karyawans)
     {
         ModelMap model = new ModelMap();
         List dataShow = new ArrayList();
         for(Karyawan karyawan : karyawans)
         {
-            Map<String, String> result = new HashMap<String, String>();
-            result.put("nama_karyawan", karyawan.getNama());
+            Map<String, String> result = getKaryawan(karyawan);
             dataShow.add(result);
         }
         

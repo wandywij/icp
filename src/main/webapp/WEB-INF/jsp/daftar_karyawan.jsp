@@ -32,8 +32,8 @@
                     <td colspan="1">></td>
                     <td colspan="3"><c:out value="${karyawans.nama_karyawan}" /></td>
                     <td colspan="1">2</td>
-                    <td colspan="1">12/01/2015</td>
-                    <td colspan="1">01/03/2015</td>
+                    <td colspan="1"><c:out value="${karyawans.kontrak_mulai}" /></td>
+                    <td colspan="1"><c:out value="${karyawans.kontrak_berakhir}" /></td>
                     <td colspan="1">48</td>
                     <td colspan="1">350,000</td>
                     <td colspan="1">70</td>

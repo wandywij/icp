@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -40,6 +42,18 @@ public class Kontrak implements Serializable {
     
     @Column(name = "gp_awal", unique = false, nullable = false)
     private Double gp_awal;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_karyawan", insertable = false, updatable = false)
+    private Karyawan karyawan;
+
+    public Karyawan getKaryawan() {
+        return karyawan;
+    }
+
+    public void setKaryawan(Karyawan karyawan) {
+        this.karyawan = karyawan;
+    }
 
     public String getId_kontrak() {
         return id_kontrak;
