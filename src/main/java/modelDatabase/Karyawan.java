@@ -6,13 +6,18 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.springframework.ui.ModelMap;
 
 /**
  *
@@ -133,6 +138,34 @@ public class Karyawan implements Serializable{
 
     public void setKeterangan(String keterangan) {
         this.keterangan = keterangan;
+    }
+    
+//    private Kontrak kontrak;
+//    public void setKontrak(Kontrak kontrak) {
+//        this.kontrak = kontrak;
+//    }
+//    
+//    public Kontrak getKontrak() {
+//        return kontrak;
+//    }
+    
+    public List getAllKaryawan(List<Karyawan> karyawans)
+    {
+        ModelMap model = new ModelMap();
+        List dataShow = new ArrayList();
+        for(Karyawan karyawan : karyawans)
+        {
+            Map<String, String> result = new HashMap<String, String>();
+            result.put("nama_karyawan", karyawan.getNama());
+            dataShow.add(result);
+        }
+        
+//        if(dataShow != null)
+//        {
+//            model.addAttribute("karyawans", dataShow);
+//        }
+//        return model;
+        return dataShow;
     }
     
 }

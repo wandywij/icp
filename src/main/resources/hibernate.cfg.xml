@@ -12,6 +12,8 @@
     
     
     <mapping class="modelDatabase.Departemen"/>
+    <mapping class="modelDatabase.Karyawan"/>
+    <mapping class="modelDatabase.Kontrak"/>
     
   </session-factory>
 </hibernate-configuration>

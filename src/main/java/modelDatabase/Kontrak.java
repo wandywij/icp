@@ -23,6 +23,9 @@ import javax.persistence.Table;
 public class Kontrak implements Serializable {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id", unique = true, nullable = false, length = 25)
+    private String id;
+    
     @Column(name = "id_kontrak", unique = true, nullable = false, length = 25)
     private String id_kontrak;
     
