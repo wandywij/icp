@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import modelDatabase.Departemen;
@@ -106,9 +107,13 @@ public class KaryawanController {
         karyawan.setAlamat(alamat);
         karyawan.setTempat_lahir(tempat_lahir);
         try {
-            karyawan.setTanggal_lahir(new Timestamp(df.parse(tanggal_lahir).getTime()));
-            kontrak.setTanggal_mulai(new Timestamp(df.parse(kontrak_mulai).getTime()));
-            kontrak.setTanggal_berakhir(new Timestamp(df.parse(kontrak_berakhir).getTime()));
+            //String string = "January 2, 2010";
+            DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+            //Date date = format.parse(string);
+            
+            karyawan.setTanggal_lahir(format.parse(tanggal_lahir));
+            kontrak.setTanggal_mulai(format.parse(kontrak_mulai));
+            kontrak.setTanggal_berakhir(format.parse(kontrak_berakhir));
         } catch (ParseException pe) {
             karyawan.setTanggal_lahir(null);
         }
@@ -144,7 +149,7 @@ public class KaryawanController {
             kodekontrak = prefix_kontrak + kodekontrak;
         }
         kontrak.setId_kontrak(kodekontrak);
-        //kontrak.setId_karyawan(kodedata);
+        kontrak.setKaryawan(karyawan);
         
         session.save(karyawan);
         session.save(kontrak);
