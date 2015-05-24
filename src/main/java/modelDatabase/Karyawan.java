@@ -6,6 +6,7 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.springframework.ui.ModelMap;
@@ -28,16 +31,17 @@ import org.springframework.ui.ModelMap;
 @Entity
 @Table(name="karyawan")
 public class Karyawan implements Serializable{
-    @Id
+    
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false, length = 20)
     private Integer id;
     
+    @Id
     @Column(name = "id_karyawan", unique = true, nullable = false, length = 25)
     private String id_karyawan;
     
-    @Column(name = "id_departemen", unique = true, nullable = false, length = 25)
-    private String id_departemen;
+//    @Column(name = "id_departemen", unique = true, nullable = false, length = 25)
+//    private String id_departemen;
     
     @Column(name = "nama", unique = false, nullable = false, length = 100)
     private String nama;
@@ -63,15 +67,10 @@ public class Karyawan implements Serializable{
     @OneToMany(mappedBy = "karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Kontrak> kontrak;
 
-    public List<Kontrak> getKontrak() {
-        return kontrak;
-    }
+    @ManyToOne
+    @JoinColumn(name = "id_departemen")
+    private Departemen departemen;
 
-    public void setKontrak(List<Kontrak> kontrak) {
-        this.kontrak = kontrak;
-    }
-    
-    
     public Karyawan() {}
 
     public Integer getId() {
@@ -90,13 +89,13 @@ public class Karyawan implements Serializable{
         this.id_karyawan = id_karyawan;
     }
 
-    public String getId_departemen() {
-        return id_departemen;
-    }
-
-    public void setId_departemen(String id_departemen) {
-        this.id_departemen = id_departemen;
-    }
+//    public String getId_departemen() {
+//        return id_departemen;
+//    }
+//
+//    public void setId_departemen(String id_departemen) {
+//        this.id_departemen = id_departemen;
+//    }
 
     public String getNama() {
         return nama;
@@ -154,6 +153,22 @@ public class Karyawan implements Serializable{
         this.keterangan = keterangan;
     }
     
+    public Departemen getDepartemen() {
+        return departemen;
+    }
+
+    public void setDepartemen(Departemen departemen) {
+        this.departemen = departemen;
+    }
+    
+    public List<Kontrak> getKontrak() {
+        return kontrak;
+    }
+
+    public void setKontrak(List<Kontrak> kontrak) {
+        this.kontrak = kontrak;
+    }
+    
 //    private Kontrak kontrak;
 //    public void setKontrak(Kontrak kontrak) {
 //        this.kontrak = kontrak;
@@ -167,18 +182,43 @@ public class Karyawan implements Serializable{
     {
         Map<String, String> result = new HashMap<String, String>();
         result.put("nama_karyawan", karyawan.getNama());
+        result.put("alamat", karyawan.getAlamat());
+        result.put("tempat_lahir", karyawan.getTempat_lahir());
+        SimpleDateFormat bdate = new SimpleDateFormat("dd MMMM YYYY");
+        result.put("tgl_lahir", bdate.format(karyawan.getTanggal_lahir()));
+        result.put("no_ktp", karyawan.getNo_ktp());
+        result.put("bagian", karyawan.getDepartemen().getNama_departemen());
+        result.put("keterangan", karyawan.getKeterangan());
         int i = karyawan.getKontrak().size() - 1;
         if(i >= 0)
         {           
-            result.put("kontrak_mulai", karyawan.getKontrak().get(i).
-                    getTanggal_mulai().toString());
-            result.put("kontrak_berakhir", karyawan.getKontrak().get(i).
-                    getTanggal_berakhir().toString());
+           final Date kontrak_mulai = karyawan.getKontrak().get(i).
+                   getTanggal_mulai();
+           final Date kontrak_berakhir = karyawan.getKontrak().get(i).
+                   getTanggal_berakhir();
+           SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY"); // Set your date format
+           int diff = (int)(kontrak_berakhir.getTime() - kontrak_mulai.getTime())/(1000*60*60*24);
+           
+           Date now = new Date();
+           int warning_type;
+           if(kontrak_berakhir.getTime() <= now.getTime()) {
+               warning_type = 2;
+           } else if(kontrak_berakhir.getTime() - (14*24*60*60*1000) <= now.getTime()) {
+               warning_type = 1;
+           } else {
+               warning_type = 0;
+           }
+           result.put("warning_type", String.valueOf(warning_type));
+           result.put("kontrak_mulai", sdf.format(kontrak_mulai));
+           result.put("kontrak_berakhir", sdf.format(kontrak_berakhir));
+           result.put("lama_kontrak", String.valueOf(diff));
         }
         else
         {
+            result.put("warning_type", "0");
             result.put("kontrak_mulai", "12/08/211");
             result.put("kontrak_berakhir", "12/09/10");
+            result.put("lama_kontrak", "-");
         }
         return result;
     }

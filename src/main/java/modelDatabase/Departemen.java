@@ -6,11 +6,14 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -21,17 +24,20 @@ import javax.persistence.Table;
 @Table(name = "departemen")
 public class Departemen implements Serializable{
     
-    @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false, length = 20)
     private Integer id;
-    
+
+    @Id
     @Column(name = "id_departemen", unique = true, nullable = false, length = 25)
     private String id_departemen;
     
     @Column(name = "nama_departemen", nullable = false, length = 100)
     private String nama_departemen;
     
+    @OneToMany(mappedBy = "departemen", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Karyawan> karyawan;
+
     public Departemen()
     {
         
@@ -61,6 +67,12 @@ public class Departemen implements Serializable{
         this.nama_departemen = nama_departemen;
     }
     
-    
+    public List<Karyawan> getKaryawan() {
+        return karyawan;
+    }
+
+    public void setKaryawan(List<Karyawan> karyawan) {
+        this.karyawan = karyawan;
+    }
     
 }

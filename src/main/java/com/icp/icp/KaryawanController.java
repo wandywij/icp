@@ -101,7 +101,7 @@ public class KaryawanController {
         Karyawan karyawan = new Karyawan();
         Kontrak kontrak = new Kontrak();
         
-        karyawan.setId_departemen(departemen);
+//        karyawan.setId_departemen(departemen);
         karyawan.setNama(nama_karyawan);
         karyawan.setAlamat(alamat);
         karyawan.setTempat_lahir(tempat_lahir);
