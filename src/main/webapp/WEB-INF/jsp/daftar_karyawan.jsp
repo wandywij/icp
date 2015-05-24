@@ -56,12 +56,12 @@
                     </td>
                     <td colspan="1">></td>
                     <td colspan="3"><c:out value="${karyawans.nama_karyawan}" /></td>
-                    <td colspan="1">2</td>
+                    <td colspan="1"><c:out value="${karyawans.jumlah_kontrak}" /></td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_mulai}" /></td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_berakhir}" /></td>
                     <td colspan="1"><c:out value="${karyawans.lama_kontrak}" /></td>
                     <td colspan="1">350,000</td>
-                    <td colspan="1">70</td>
+                    <td colspan="1"><c:out value="${karyawans.total_hari}" /></td>
                 </tr>
                 <tr>
                     <td colspan="9">
