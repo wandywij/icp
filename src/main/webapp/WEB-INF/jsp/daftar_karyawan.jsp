@@ -26,17 +26,61 @@
         </thead>
 
         <tbody>
-            <c:forEach items="${karyawans}" var="karyawans">
-                <tr data-toggle="collapse" data-target="#accordionOne" class="clickable">
-                    <td colspan="1"><span class="glyphicon glyphicon-warning-sign glyphicon-warning-contract-end"></span></td>
+            <c:forEach items="${karyawans}" var="karyawans" varStatus="loop">
+                <tr data-toggle="collapse" data-target="#accordion<c:out value="${loop.index}" />" class="clickable">
+                    <td colspan="1">
+                        <c:choose>
+                            <c:when test="${karyawans.warning_type == '2'}">
+                                <span class="glyphicon glyphicon-warning-sign glyphicon-warning-contract-end"></span>
+                            </c:when>
+                            <c:when test="${karyawans.warning_type == '1'}">
+                                <span class="glyphicon glyphicon-warning-sign glyphicon-warning-almost-due"></span>
+                            </c:when>
+                            <c:when test="${karyawans.warning_type == '0'}">
+                            </c:when>
+                        </c:choose>
+                    </td>
                     <td colspan="1">></td>
                     <td colspan="3"><c:out value="${karyawans.nama_karyawan}" /></td>
                     <td colspan="1">2</td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_mulai}" /></td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_berakhir}" /></td>
-                    <td colspan="1">48</td>
+                    <td colspan="1"><c:out value="${karyawans.lama_kontrak}" /></td>
                     <td colspan="1">350,000</td>
                     <td colspan="1">70</td>
+                </tr>
+                <tr>
+                    <td colspan="9">
+                        <div id="accordion<c:out value="${loop.index}" />" class="collapse">
+                            <table>
+                                <tr>
+                                    <td>Alamat</td>
+                                    <td>  :  </td>
+                                    <td><c:out value="${karyawans.alamat}" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Tempat/Tgl Lahir  </td>
+                                    <td>:</td>
+                                    <td><c:out value="${karyawans.tempat_lahir}" />, <c:out value="${karyawans.tgl_lahir}" /></td>
+                                </tr>
+                                <tr>
+                                    <td>No KTP </td>
+                                    <td>  :  </td>
+                                    <td><c:out value="${karyawans.no_ktp}" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Bagian</td>
+                                    <td>  :  </td>
+                                    <td><c:out value="${karyawans.bagian}" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Keterangan</td>
+                                    <td>  :  </td>
+                                    <td><c:out value="${karyawans.keterangan}" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
                 </tr>
             </c:forEach>
 <!--            <tr data-toggle="collapse" data-target="#accordionOne" class="clickable">
