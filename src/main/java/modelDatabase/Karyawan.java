@@ -6,6 +6,7 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
@@ -28,11 +30,12 @@ import org.springframework.ui.ModelMap;
 @Entity
 @Table(name="karyawan")
 public class Karyawan implements Serializable{
-    @Id
+    
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false, length = 20)
     private Integer id;
     
+    @Id
     @Column(name = "id_karyawan", unique = true, nullable = false, length = 25)
     private String id_karyawan;
     
@@ -60,7 +63,8 @@ public class Karyawan implements Serializable{
     @Column(name = "keterangan", unique = false, nullable = true, length = 500)
     private String keterangan;
     
-    @OneToMany(mappedBy = "karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "id_karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    //@OneToMany(mappedBy = "id_karyawan")
     private List<Kontrak> kontrak;
 
     public List<Kontrak> getKontrak() {
@@ -169,11 +173,15 @@ public class Karyawan implements Serializable{
         result.put("nama_karyawan", karyawan.getNama());
         int i = karyawan.getKontrak().size() - 1;
         if(i >= 0)
-        {           
-            result.put("kontrak_mulai", karyawan.getKontrak().get(i).
-                    getTanggal_mulai().toString());
-            result.put("kontrak_berakhir", karyawan.getKontrak().get(i).
-                    getTanggal_berakhir().toString());
+        {
+            final Date kontrak_mulai = karyawan.getKontrak().get(i).
+                    getTanggal_mulai();
+            final Date kontrak_berakhir = karyawan.getKontrak().get(i).
+                    getTanggal_berakhir();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY"); // Set your date format
+            
+            result.put("kontrak_mulai", sdf.format(kontrak_mulai));
+            result.put("kontrak_berakhir", sdf.format(kontrak_berakhir));
         }
         else
         {
