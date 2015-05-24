@@ -30,7 +30,7 @@
                         <input type="text" class="form-control" id="tempat_lahir" name="tempat_lahir" placeholder="Tempat Lahir">
                     </div>
                     <div class="col-xs-4">
-                        <input type="text" class="form-control" id="tanggal_lahir" name="tanggal_lahir" placeholder="Tanggal Lahir">
+                        <input type="text" class="form-control datepickerWithYearRange" id="tanggal_lahir" name="tanggal_lahir" placeholder="Tanggal Lahir">
                     </div>
                 </div>
             </div>
@@ -61,13 +61,13 @@
             <div class="form-group">
                 <label for="kontrak_mulai" class="col-xs-2 control-label">Kontrak Mulai</label>
                 <div class="col-xs-10">
-                    <input type="text" class="form-control" id="kontrak_mulai" name="kontrak_mulai" placeholder="Tanggal Kontrak Mulai">
+                    <input type="text" class="form-control datepickerWithYearRange" id="kontrak_mulai" name="kontrak_mulai" placeholder="Tanggal Kontrak Mulai">
                 </div>
             </div>
             <div class="form-group">
                 <label for="kontrak_berakhir" class="col-xs-2 control-label">Kontrak Berakhir</label>
                 <div class="col-xs-10">
-                    <input type="text" class="form-control" id="kontrak_berakhir" name="kontrak_berakhir" placeholder="Tanggal Kontrak Berakhir">
+                    <input type="text" class="form-control datepickerWithYearRange" id="kontrak_berakhir" name="kontrak_berakhir" placeholder="Tanggal Kontrak Berakhir">
                 </div>
             </div>
             <div class="form-group">
@@ -99,9 +99,23 @@
 
 <script>
     $(function () {
-        $("#tanggal_lahir").datepicker();
-        $("#kontrak_mulai").datepicker();
-        $("#kontrak_berakhir").datepicker();
+//        $("#tanggal_lahir").datepicker(
+//                { 
+//                    changeMonth: true,
+//                    changeYear: true,   
+//                    showButtonPanel: true,
+//                    dateFormat: 'dd-mm-yy',
+//                    yearRange: "-100:+0",});
+//        $("#kontrak_mulai").datepicker({ dateFormat: 'dd-mm-yy' });
+//        $("#kontrak_berakhir").datepicker({ dateFormat: 'dd-mm-yy' });
+
+    $(".datepickerWithYearRange").datepicker(
+                { 
+                    changeMonth: true,
+                    changeYear: true,   
+                    showButtonPanel: true,
+                    dateFormat: 'dd-mm-yy',
+                    yearRange: "-100:+0",});
     });
 
 </script>

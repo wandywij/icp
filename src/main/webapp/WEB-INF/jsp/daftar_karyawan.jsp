@@ -8,8 +8,22 @@
 <%@include file="/WEB-INF/layout/header.jsp" %>
 
 <div class="row">
-    <h1>Daftar Karyawan</h1>
-
+    <table class="table">
+        <tr>
+            <td>
+<!--                <h1>Daftar Karyawan <button type="submit" class="btn btn-success text-right" >Go</button></h1>-->
+                    <h1>
+                        <span>Daftar Karyawan</span>
+                        <button type="submit" class="btn btn-success pull-right">Tambah Karyawan</button>
+                    </h1>
+            </td>
+<!--            <td class="text-right " >
+                <button type="submit" class="btn btn-success text-right" >Go</button>
+            </td>-->
+        </tr>
+            
+                
+    </table>  
     <table class="table table-striped">
         <thead>
             <tr>

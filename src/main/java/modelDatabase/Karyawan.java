@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
@@ -64,7 +65,8 @@ public class Karyawan implements Serializable{
     @Column(name = "keterangan", unique = false, nullable = true, length = 500)
     private String keterangan;
     
-    @OneToMany(mappedBy = "karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "id_karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    //@OneToMany(mappedBy = "id_karyawan")
     private List<Kontrak> kontrak;
 
     @ManyToOne
