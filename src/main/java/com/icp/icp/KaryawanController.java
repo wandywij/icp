@@ -144,7 +144,7 @@ public class KaryawanController {
             kodekontrak = prefix_kontrak + kodekontrak;
         }
         kontrak.setId_kontrak(kodekontrak);
-        kontrak.setId_karyawan(kodedata);
+        //kontrak.setId_karyawan(kodedata);
         
         session.save(karyawan);
         session.save(kontrak);
