@@ -191,7 +191,9 @@ public class Karyawan implements Serializable{
         result.put("no_ktp", karyawan.getNo_ktp());
         result.put("bagian", karyawan.getDepartemen().getNama_departemen());
         result.put("keterangan", karyawan.getKeterangan());
+        result.put("jumlah_kontrak", String.valueOf(karyawan.getKontrak().size()));
         int i = karyawan.getKontrak().size() - 1;
+        long total_hari = 0;
         if(i >= 0)
         {           
            final Date kontrak_mulai = karyawan.getKontrak().get(i).
@@ -199,7 +201,13 @@ public class Karyawan implements Serializable{
            final Date kontrak_berakhir = karyawan.getKontrak().get(i).
                    getTanggal_berakhir();
            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY"); // Set your date format
-           int diff = (int)(kontrak_berakhir.getTime() - kontrak_mulai.getTime())/(1000*60*60*24);
+           long diff = 0;
+           for (int j=0; j<=i; j++) {
+               Date km = karyawan.getKontrak().get(j).getTanggal_mulai();
+               Date ka = karyawan.getKontrak().get(j).getTanggal_berakhir();
+               diff = (ka.getTime() - km.getTime())/(1000*60*60*24);
+               total_hari += diff;
+           }
            
            Date now = new Date();
            int warning_type;
@@ -214,6 +222,7 @@ public class Karyawan implements Serializable{
            result.put("kontrak_mulai", sdf.format(kontrak_mulai));
            result.put("kontrak_berakhir", sdf.format(kontrak_berakhir));
            result.put("lama_kontrak", String.valueOf(diff));
+           result.put("total_hari", String.valueOf(total_hari));
         }
         else
         {
@@ -221,6 +230,7 @@ public class Karyawan implements Serializable{
             result.put("kontrak_mulai", "12/08/211");
             result.put("kontrak_berakhir", "12/09/10");
             result.put("lama_kontrak", "-");
+            result.put("total_hari", "0");
         }
         return result;
     }
