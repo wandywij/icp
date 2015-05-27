@@ -32,12 +32,12 @@ import org.springframework.ui.ModelMap;
 @Entity
 @Table(name="karyawan")
 public class Karyawan implements Serializable{
-    
+
+    @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false, length = 20)
     private Integer id;
     
-    @Id
     @Column(name = "id_karyawan", unique = true, nullable = false, length = 25)
     private String id_karyawan;
     
@@ -201,15 +201,16 @@ public class Karyawan implements Serializable{
            final Date kontrak_berakhir = karyawan.getKontrak().get(i).
                    getTanggal_berakhir();
            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY"); // Set your date format
-           long diff = 0;
+           long diff = 0, sisa = 0;
+           Date now = new Date();
            for (int j=0; j<=i; j++) {
                Date km = karyawan.getKontrak().get(j).getTanggal_mulai();
                Date ka = karyawan.getKontrak().get(j).getTanggal_berakhir();
                diff = (ka.getTime() - km.getTime())/(1000*60*60*24);
+               sisa = (ka.getTime() - now.getTime())/(1000*60*60*24);
                total_hari += diff;
            }
            
-           Date now = new Date();
            int warning_type;
            if(kontrak_berakhir.getTime() <= now.getTime()) {
                warning_type = 2;
@@ -222,6 +223,7 @@ public class Karyawan implements Serializable{
            result.put("kontrak_mulai", sdf.format(kontrak_mulai));
            result.put("kontrak_berakhir", sdf.format(kontrak_berakhir));
            result.put("lama_kontrak", String.valueOf(diff));
+           result.put("sisa_kontrak", String.valueOf(sisa));
            result.put("total_hari", String.valueOf(total_hari));
         }
         else
@@ -229,7 +231,8 @@ public class Karyawan implements Serializable{
             result.put("warning_type", "0");
             result.put("kontrak_mulai", "12/08/211");
             result.put("kontrak_berakhir", "12/09/10");
-            result.put("lama_kontrak", "-");
+            result.put("lama_kontrak", "0");
+            result.put("sisa_kontrak", "0");
             result.put("total_hari", "0");
         }
         return result;

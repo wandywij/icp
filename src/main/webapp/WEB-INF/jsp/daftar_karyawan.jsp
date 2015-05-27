@@ -59,12 +59,13 @@
                     <td colspan="1"><c:out value="${karyawans.jumlah_kontrak}" /></td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_mulai}" /></td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_berakhir}" /></td>
-                    <td colspan="1"><c:out value="${karyawans.lama_kontrak}" /></td>
+                    <td colspan="1"><c:out value="${karyawans.sisa_kontrak}" /></td>
                     <td colspan="1">350,000</td>
                     <td colspan="1"><c:out value="${karyawans.total_hari}" /></td>
                 </tr>
                 <tr>
-                    <td colspan="9">
+                    <td colspan="2">
+                    <td colspan="7">
                         <div id="accordion<c:out value="${loop.index}" />" class="collapse">
                             <table>
                                 <tr>
