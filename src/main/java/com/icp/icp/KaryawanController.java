@@ -24,6 +24,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,19 +36,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class KaryawanController {
+
     private String prefix = "KAR";
     private String prefix_kontrak = "KTR";
-    
-    @RequestMapping(value="karyawan/input", method = RequestMethod.GET)
-    public String insert(ModelMap model)
-    {
+
+    @RequestMapping(value = "karyawan/input", method = RequestMethod.GET)
+    public String insert(ModelMap model) {
         Session session = hibernateUtil.getSessionFactory().openSession();
         Criteria criteria = session.createCriteria(Departemen.class);
         List<Departemen> departemens = criteria.list();
         //List<penjualan> lData = criteria.list();
         List dataShow = new ArrayList();
-        for(Departemen departemen : departemens)
-        {
+        for (Departemen departemen : departemens) {
             Map<String, String> result = new HashMap<String, String>();
             result.put("nama_departemen", departemen.getNama_departemen());
             result.put("id_departemen", departemen.getId_departemen());
@@ -58,10 +58,9 @@ public class KaryawanController {
         session.close();
         return "karyawan";
     }
-    
-    @RequestMapping(value={"karyawan", ""}, method = RequestMethod.GET)
-    public String loadAll(ModelMap model)
-    {
+
+    @RequestMapping(value = {"karyawan", ""}, method = RequestMethod.GET)
+    public String loadAll(ModelMap model) {
         Session session = hibernateUtil.getSessionFactory().openSession();
         Criteria criteria = session.createCriteria(Karyawan.class);
         List<Karyawan> karyawans = criteria.list();
@@ -69,17 +68,17 @@ public class KaryawanController {
 //        List dataShow = karyawan.getAllKaryawan(karyawans);
 //        model.addAttribute("karyawans", dataShow);
         List dataShow = new ArrayList();
-        for(Karyawan karyawan : karyawans)
-        {
+        for (Karyawan karyawan : karyawans) {
             Map<String, String> result = karyawan.getKaryawan(karyawan);
-            
-            dataShow.add(result);            
+
+            dataShow.add(result);
         }
+
         model.addAttribute("karyawans", dataShow);
         session.close();
         return "daftar_karyawan";
     }
-    
+
     @RequestMapping(value = "karyawan/input", method = RequestMethod.POST)
     public String save(ModelMap model, HttpServletRequest request) {
         final String nama_karyawan = request.getParameter("nama_karyawan");
@@ -94,68 +93,96 @@ public class KaryawanController {
         final double gp_awal = Double.parseDouble(request.getParameter("gp_awal"));
         final String no_absen = request.getParameter("no_absen");
         final String keterangan = request.getParameter("keterangan");
-        
+
         Session session = hibernateUtil.getSessionFactory().openSession();
         Transaction trx = session.beginTransaction();
-        
+
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         Karyawan karyawan = new Karyawan();
         Kontrak kontrak = new Kontrak();
-        
+
 //        karyawan.setId_departemen(departemen);
         karyawan.setNama(nama_karyawan);
         karyawan.setAlamat(alamat);
         karyawan.setTempat_lahir(tempat_lahir);
         try {
             //String string = "January 2, 2010";
-            DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+            DateFormat format = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
             //Date date = format.parse(string);
-            
+
             karyawan.setTanggal_lahir(format.parse(tanggal_lahir));
             kontrak.setTanggal_mulai(format.parse(kontrak_mulai));
             kontrak.setTanggal_berakhir(format.parse(kontrak_berakhir));
         } catch (ParseException pe) {
+            pe.printStackTrace();
             karyawan.setTanggal_lahir(null);
         }
         karyawan.setNo_ktp(no_ktp);
         karyawan.setFingerprint(no_absen);
         karyawan.setKeterangan(keterangan);
         kontrak.setGp_awal(gp_awal);
+
+        Criteria karyawanCriteria = karyawan.validate(karyawan);
         
-        Criteria criteria = session.createCriteria(Karyawan.class).
-                setProjection(Projections.property("id"));
-        criteria.addOrder(Order.desc("id"));
-        criteria.setMaxResults(1);
-        String kodedata = prefix + "0001";
-        if (criteria.uniqueResult() != null ) {
-            kodedata = String.valueOf(Integer.valueOf(criteria.uniqueResult().toString())+1);
-            while (kodedata.length() < 4) {
-                kodedata = "0"+kodedata;
+        if (karyawanCriteria == null) //blm ada di database
+        {
+            Criteria criteria = session.createCriteria(Karyawan.class).
+                    setProjection(Projections.property("id"));
+            criteria.addOrder(Order.desc("id"));
+            criteria.setMaxResults(1);
+            String kodedata = prefix + "0001";
+            if (criteria.uniqueResult() != null) {
+                System.out.println("criteria uniqueresult " + criteria.uniqueResult());
+                //Karyawan temp = (Karyawan) criteria.uniqueResult();
+                
+                //kodedata = String.valueOf(temp.getId() + 1);
+                kodedata = String.valueOf(Integer.valueOf(criteria.uniqueResult().toString()) + 1);
+                while (kodedata.length() < 4) {
+                    kodedata = "0" + kodedata;
+                }
+                kodedata = prefix + kodedata;
             }
-            kodedata = prefix + kodedata;
-        }
-        karyawan.setId_karyawan(kodedata);
-        
-        criteria = session.createCriteria(Kontrak.class).
-                setProjection(Projections.property("id"));
-        criteria.addOrder(Order.desc("id"));
-        criteria.setMaxResults(1);
-        String kodekontrak = prefix_kontrak + "0001";
-        if (criteria.uniqueResult() != null ) {
-            kodekontrak = String.valueOf(Integer.valueOf(criteria.uniqueResult().toString())+1);
-            while (kodekontrak.length() < 4) {
-                kodekontrak = "0"+kodekontrak;
+            
+            
+            Criteria departemenCriteria = session.createCriteria(Departemen.class);
+            departemenCriteria.add(Restrictions.eq("id_departemen", departemen));
+            System.out.println("id_departemen " + departemen);
+            if(departemenCriteria.uniqueResult() != null)
+            {
+                Departemen departemenTemp = new Departemen();
+                departemenTemp = (Departemen) departemenCriteria.uniqueResult();
+                karyawan.setDepartemen(departemenTemp);
             }
-            kodekontrak = prefix_kontrak + kodekontrak;
+            else System.out.println("ternyata departemenCriteria masih null");
+            //Departemen departemen = new Departemen();
+            karyawan.setId_karyawan(kodedata);
+            //karyawan.setDepartemen(null);
+
+            criteria = session.createCriteria(Kontrak.class).
+                    setProjection(Projections.property("id"));
+            criteria.addOrder(Order.desc("id"));
+            criteria.setMaxResults(1);
+            String kodekontrak = prefix_kontrak + "0001";
+            if (criteria.uniqueResult() != null) {
+                kodekontrak = String.valueOf(Integer.valueOf(criteria.uniqueResult().toString()) + 1);
+                while (kodekontrak.length() < 4) {
+                    kodekontrak = "0" + kodekontrak;
+                }
+                kodekontrak = prefix_kontrak + kodekontrak;
+            }
+            kontrak.setId_kontrak(kodekontrak);
+            kontrak.setKaryawan(karyawan);
+
+            session.save(karyawan);
+            session.save(kontrak);
+            trx.commit();
+            session.close();
         }
-        kontrak.setId_kontrak(kodekontrak);
-        kontrak.setKaryawan(karyawan);
-        
-        session.save(karyawan);
-        session.save(kontrak);
-        trx.commit();
-        session.close();
-        
+        else
+        {
+            //System.out.println("ini ada mi di database ia karyawanna");
+        }
+
         return "redirect:/karyawan/input";
     }
 }

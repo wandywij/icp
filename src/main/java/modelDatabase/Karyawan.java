@@ -23,6 +23,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -251,6 +254,22 @@ public class Karyawan implements Serializable{
 //        }
 //        return model;
         return dataShow;
+    }
+    
+    public Criteria validate(Karyawan karyawan)
+    {
+        Session session = hibernateUtil.getSessionFactory().openSession();
+        Criteria karyawanCriteria = session.createCriteria(Karyawan.class);
+        karyawanCriteria.add(Restrictions.eq("no_ktp", karyawan.getNo_ktp()));
+        
+        if(karyawanCriteria.uniqueResult() != null)
+        {           
+            return karyawanCriteria;
+        }
+        else
+        {
+            return null;
+        }       
     }
     
 }
