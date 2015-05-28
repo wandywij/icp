@@ -76,7 +76,23 @@ public class KaryawanController {
 
             dataShow.add(result);
         }
+        Collections.sort(dataShow, new Comparator<Map>() {
 
+            @Override
+            public int compare(Map k1, Map k2) {
+                long sisa1 = Long.parseLong(((String)k1.get("sisa_kontrak")));
+                long sisa2 = Long.parseLong(((String)k2.get("sisa_kontrak")));
+                if (sisa1 < sisa2) return -1;
+                if (sisa1 == sisa2) return 0;
+                return 1;
+            }
+
+//            @Override
+//            public int compare(Karyawan k1, Karyawan k2) {
+//                return (((Kontrak)k1.getKontrak()).getTanggal_berakhir()).compareTo(((Kontrak)k2.getKontrak()).getTanggal_berakhir());
+//            }
+            
+        });
         model.addAttribute("karyawans", dataShow);
         session.close();
         return "daftar_karyawan";
