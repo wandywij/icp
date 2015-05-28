@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -26,6 +27,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -125,17 +127,26 @@ public class KaryawanController {
         karyawan.setNama(nama_karyawan);
         karyawan.setAlamat(alamat);
         karyawan.setTempat_lahir(tempat_lahir);
+        DateFormat format = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
         try {
-            //String string = "January 2, 2010";
-            DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-            //Date date = format.parse(string);
-            
             karyawan.setTanggal_lahir(format.parse(tanggal_lahir));
+        } catch (ParseException pe) {
+            pe.printStackTrace();
+            karyawan.setTanggal_lahir(new Date());
+        }
+        try {
             kontrak.setTanggal_mulai(format.parse(kontrak_mulai));
+        } catch (ParseException pe) {
+            pe.printStackTrace();
+            kontrak.setTanggal_mulai(new Date());
+        }
+        try {
             kontrak.setTanggal_berakhir(format.parse(kontrak_berakhir));
         } catch (ParseException pe) {
-            karyawan.setTanggal_lahir(null);
+            pe.printStackTrace();
+            kontrak.setTanggal_berakhir(new Date());
         }
+
         karyawan.setNo_ktp(no_ktp);
         karyawan.setFingerprint(no_absen);
         karyawan.setKeterangan(keterangan);
@@ -153,6 +164,18 @@ public class KaryawanController {
             }
             kodedata = prefix + kodedata;
         }
+        
+        Criteria deptCriteria = session.createCriteria(Departemen.class);
+        deptCriteria.add(Restrictions.eq("id_departemen", departemen));
+        System.out.println("id_departemen"+departemen);
+        if (deptCriteria.uniqueResult() != null) {
+            Departemen departemenTemp = new Departemen();
+            departemenTemp = (Departemen) deptCriteria.uniqueResult();
+            karyawan.setDepartemen(departemenTemp);
+        } else {
+            System.out.println("deptCriteria null ");
+        }
+        
         karyawan.setId_karyawan(kodedata);
         
         criteria = session.createCriteria(Kontrak.class).
