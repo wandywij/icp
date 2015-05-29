@@ -6,12 +6,15 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,11 +39,12 @@ import org.springframework.ui.ModelMap;
 @Table(name="karyawan")
 public class Karyawan implements Serializable{
 
-    @Id
+    
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false, length = 20)
     private Integer id;
     
+    @Id
     @Column(name = "id_karyawan", unique = true, nullable = false, length = 25)
     private String id_karyawan;
     
@@ -273,6 +277,28 @@ public class Karyawan implements Serializable{
         {
             return null;
         }       
+    }
+    
+    public Boolean isValid(Karyawan karyawan)
+    {
+        //final Date now = new Date ();
+        //final String todayDate = new SimpleDateFormat("YYYY-MM-dd").format(now);
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
+        final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
+        final long now = new Date().getTime();
+        System.out.println("kontrak mulai " + kontrakMulai + " now " + now + 
+                "kontrak berakhir " + kontrakBerakhir);
+        if(kontrakMulai < now && now < kontrakBerakhir)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
+        
     }
     
 }

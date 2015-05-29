@@ -207,10 +207,14 @@ public class KaryawanController {
         }
         else
         {
-            //System.out.println("ini ada mi di database ia karyawanna");
+            
+            boolean isValid = karyawan.isValid((Karyawan) karyawanCriteria.uniqueResult());
+            System.out.println("karyawan ternyata " + isValid);
         }
 
         return "redirect:/karyawan/input";
     }
+    
+    
     
 }
