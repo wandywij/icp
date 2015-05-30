@@ -6,6 +6,7 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -226,7 +227,9 @@ public class Karyawan implements Serializable{
            result.put("warning_type", String.valueOf(warning_type));
            result.put("kontrak_mulai", sdf.format(kontrak_mulai));
            result.put("kontrak_berakhir", sdf.format(kontrak_berakhir));
-           result.put("gp_awal", gp_awal.toString());
+           DecimalFormat df = new DecimalFormat("#");
+           df.setMaximumFractionDigits(0);
+           result.put("gp_awal", df.format(gp_awal));
            result.put("lama_kontrak", String.valueOf(diff));
            result.put("sisa_kontrak", String.valueOf(sisa));
            result.put("total_hari", String.valueOf(total_hari));
