@@ -34,7 +34,7 @@
                 <th colspan="1">Kontrak Mulai</th>
                 <th colspan="1">Kontrak Berakhir</th>
                 <th colspan="1">Lama Kontrak</th>
-                <th colspan="1">Gaji Pokok</th>
+                <th colspan="2">Gaji Pokok</th>
                 <th colspan="1">Total Hari</th>
             </tr>
         </thead>
@@ -59,13 +59,13 @@
                     <td colspan="1"><c:out value="${karyawans.jumlah_kontrak}" /></td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_mulai}" /></td>
                     <td colspan="1"><c:out value="${karyawans.kontrak_berakhir}" /></td>
-                    <td colspan="1"><c:out value="${karyawans.sisa_kontrak}" /></td>
-                    <td colspan="1">350,000</td>
+                    <td colspan="1"><c:out value="${karyawans.lama_kontrak}" /></td>
+                    <td colspan="2" class="numberfilter"><c:out value="${karyawans.gp_awal}" /></td>
                     <td colspan="1"><c:out value="${karyawans.total_hari}" /></td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                    <td colspan="7">
+                    <td colspan="">
                         <div id="accordion<c:out value="${loop.index}" />" class="collapse">
                             <table>
                                 <tr>
