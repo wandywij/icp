@@ -231,7 +231,6 @@ public class Karyawan implements Serializable{
            result.put("warning_type", String.valueOf(warning_type));
            result.put("kontrak_mulai", sdf.format(kontrak_mulai));
            result.put("kontrak_berakhir", sdf.format(kontrak_berakhir));
-           //double test = 12345678;
            DecimalFormat df = new DecimalFormat("#");
            df.setMaximumFractionDigits(0);
            result.put("gp_awal", df.format(gp_awal));

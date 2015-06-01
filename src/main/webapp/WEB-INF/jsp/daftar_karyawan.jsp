@@ -30,12 +30,12 @@
                 <th colspan="1"></th>
                 <th colspan="1"></th>
                 <th colspan="3">Nama Lengkap</th>
-                <th colspan="1">Kontrak ke-</th>
-                <th colspan="1">Kontrak Mulai</th>
-                <th colspan="1">Kontrak Berakhir</th>
-                <th colspan="1">Lama Kontrak</th>
-                <th colspan="2">Gaji Pokok</th>
-                <th colspan="1">Total Hari</th>
+                <th colspan="1" style="text-align:center">Kontrak ke-</th>
+                <th colspan="1" style="text-align:center">Kontrak Mulai</th>
+                <th colspan="1" style="text-align:center">Kontrak Berakhir</th>
+                <th colspan="1" style="text-align:center">Lama Kontrak</th>
+                <th colspan="2" style="text-align:center">Gaji Pokok</th>
+                <th colspan="1" style="text-align:center">Total Hari</th>
             </tr>
         </thead>
 
@@ -56,12 +56,13 @@
                     </td>
                     <td colspan="1">></td>
                     <td colspan="3"><c:out value="${karyawans.nama_karyawan}" /></td>
-                    <td colspan="1"><c:out value="${karyawans.jumlah_kontrak}" /></td>
-                    <td colspan="1"><c:out value="${karyawans.kontrak_mulai}" /></td>
-                    <td colspan="1"><c:out value="${karyawans.kontrak_berakhir}" /></td>
-                    <td colspan="1"><c:out value="${karyawans.lama_kontrak}" /></td>
-                    <td colspan="2" class="numberfilter"><c:out value="${karyawans.gp_awal}" /></td>
-                    <td colspan="1"><c:out value="${karyawans.total_hari}" /></td>
+                    <td colspan="1" style="text-align:center"><c:out value="${karyawans.jumlah_kontrak}" /></td>
+                    <td colspan="1" style="text-align:center"><c:out value="${karyawans.kontrak_mulai}" /></td>
+                    <td colspan="1" style="text-align:center"><c:out value="${karyawans.kontrak_berakhir}" /></td>
+                    <td colspan="1" style="text-align:center"><c:out value="${karyawans.lama_kontrak}" /></td>
+                    <td colspan="1">Rp</td>
+                    <td colspan="1" class="numberfilter pull-right"><c:out value="${karyawans.gp_awal}" /></td>
+                    <td colspan="1" style="text-align:center"><c:out value="${karyawans.total_hari}" /></td>
                 </tr>
                 <tr>
                     <td colspan="2">
