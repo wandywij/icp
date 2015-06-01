@@ -6,6 +6,7 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -230,7 +231,10 @@ public class Karyawan implements Serializable{
            result.put("warning_type", String.valueOf(warning_type));
            result.put("kontrak_mulai", sdf.format(kontrak_mulai));
            result.put("kontrak_berakhir", sdf.format(kontrak_berakhir));
-           result.put("gp_awal", gp_awal.toString());
+           //double test = 12345678;
+           DecimalFormat df = new DecimalFormat("#");
+           df.setMaximumFractionDigits(0);
+           result.put("gp_awal", df.format(gp_awal));
            result.put("lama_kontrak", String.valueOf(diff));
            result.put("sisa_kontrak", String.valueOf(sisa));
            result.put("total_hari", String.valueOf(total_hari));
@@ -281,26 +285,37 @@ public class Karyawan implements Serializable{
         }       
     }
     
-    public Boolean isValid(Karyawan karyawan)
+    public Boolean isValid(Karyawan karyawan, String new_tanggal_kontrak)
     {
         //final Date now = new Date ();
         //final String todayDate = new SimpleDateFormat("YYYY-MM-dd").format(now);
         //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
-        final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
-        final long now = new Date().getTime();
-        System.out.println("kontrak mulai " + kontrakMulai + " now " + now + 
-                "kontrak berakhir " + kontrakBerakhir);
-        if(kontrakMulai < now && now < kontrakBerakhir)
-        {
-            return true;
+        
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+            Date temp = format.parse(new_tanggal_kontrak);
+            final long tanggal_kontrak_baru = temp.getTime();
+            final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
+            final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
+            final long now = new Date().getTime();
+            System.out.println("kontrak mulai " + kontrakMulai + " now " + now + 
+                    "kontrak berakhir " + kontrakBerakhir);
+            if(kontrakMulai < now && now < kontrakBerakhir)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(Karyawan.class.getName()).log(Level.SEVERE, null, ex);
         }
-        else
-        {
-            return false;
-        }
+        return false;
         
         
     }
+    
+    
     
 }
