@@ -7,6 +7,8 @@ package modelDatabase;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -88,5 +90,15 @@ public class Kontrak implements Serializable {
 
     public void setGp_awal(Double gp_awal) {
         this.gp_awal = gp_awal;
+    }
+    
+    public Map<String, String> getKontrak(Kontrak kontrak)
+    {
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("id_kontrak", kontrak.getId_kontrak());
+        result.put("gp_awal", kontrak.getGp_awal().toString());
+        result.put("tanggal_mulai", kontrak.getTanggal_mulai().toString());
+        result.put("tanggal_berakhir", kontrak.getTanggal_berakhir().toString());
+        return result;
     }
 }

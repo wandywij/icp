@@ -26,6 +26,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Controller;
@@ -66,6 +67,12 @@ public class KaryawanController {
     public String loadAll(ModelMap model) {
         Session session = hibernateUtil.getSessionFactory().openSession();
         Criteria criteria = session.createCriteria(Karyawan.class);
+//        criteria.createAlias("kontrak", "kontrak"); 
+//        criteria.addOrder(Order.desc("kontrak.tanggal_berakhir"));
+//        criteria.setFirstResult(0).setMaxResults(1);
+        
+//        criteria.createAlias("kontrak", "kontrak"); 
+//        criteria.setProjection(Projections.max("kontrak.tanggal_berakhir"));
         List<Karyawan> karyawans = criteria.list();
 //        Karyawan karyawan = new Karyawan();
 //        List dataShow = karyawan.getAllKaryawan(karyawans);

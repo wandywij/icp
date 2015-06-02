@@ -6,12 +6,17 @@
 package modelDatabase;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,6 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.ui.ModelMap;
 
@@ -168,6 +174,43 @@ public class Karyawan implements Serializable{
     }
     
     public List<Kontrak> getKontrak() {
+        /*Session session = hibernateUtil.getSessionFactory().openSession();
+        Criteria criteria = session.createCriteria(Karyawan.class);
+        criteria.createAlias("kontrak", "kontrak");
+        criteria.addOrder(Order.desc("kontrak.tanggal_berakhir"));
+        criteria.setFirstResult(0).setMaxResults(1);
+        List<Karyawan> temp = criteria.list();
+        kontrak = temp.get(0).getKontrak();*/
+        
+//        List dataKontrak = new ArrayList();
+//        for(Kontrak kon : kontrak) {
+//            Map<String, String> result = kon.getKontrak(kon);
+//            dataKontrak.add(result);
+//        }
+//        Collections.sort(dataKontrak, new Comparator<Map>() {
+//
+//            @Override
+//            public int compare(Map k1, Map k2) {
+//                DateFormat format = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+//                Date b1, b2;
+//                try {
+//                    b1 = format.parse(k1.get("tanggal_berakhir").toString());
+//                } catch (ParseException pe) {
+//                    pe.printStackTrace();
+//                    b1 = new Date();
+//                }
+//                try {
+//                    b2 = format.parse(k2.get("tanggal_berakhir").toString());
+//                } catch (ParseException pe) {
+//                    pe.printStackTrace();
+//                    b2 = new Date();
+//                }
+//                if (b1.after(b2)) return -1;
+//                if (b1.equals(b2)) return 0;
+//                return 1;
+//            }
+//        });
+        
         return kontrak;
     }
 

@@ -14,7 +14,9 @@
 <!--                <h1>Daftar Karyawan <button type="submit" class="btn btn-success text-right" >Go</button></h1>-->
                     <h1>
                         <span>Daftar Karyawan</span>
-                        <button type="submit" class="btn btn-success pull-right">Tambah Karyawan</button>
+                        <a href="${baseURL}karyawan/input">
+                            <button type="submit" class="btn btn-success pull-right">Tambah Karyawan</button>
+                        </a>
                     </h1>
             </td>
 <!--            <td class="text-right " >
@@ -56,7 +58,9 @@
                     </td>
                     <td colspan="1">></td>
                     <td colspan="3"><c:out value="${karyawans.nama_karyawan}" /></td>
-                    <td colspan="1" style="text-align:center"><c:out value="${karyawans.jumlah_kontrak}" /></td>
+                    <td colspan="1" style="text-align:center" onclick="ShowDetailPopUp();s">
+                        <c:out value="${karyawans.jumlah_kontrak}" />
+                    </td>
                     <td colspan="1" style="text-align:center"><c:out value="${karyawans.kontrak_mulai}" /></td>
                     <td colspan="1" style="text-align:center"><c:out value="${karyawans.kontrak_berakhir}" /></td>
                     <td colspan="1" style="text-align:center"><c:out value="${karyawans.lama_kontrak}" /></td>
@@ -163,4 +167,9 @@
     </table>
 </div>
 
+<script type="text/javascript">
+    function ShowDetailPopUp() {
+        popup.Show();
+    }
+</script>
 <%@include file="/WEB-INF/layout/footer.jsp" %>
