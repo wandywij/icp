@@ -34,10 +34,12 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -232,8 +234,7 @@ public class KaryawanController {
         
         if (karyawanCriteria == null) //blm ada di database
         {
-            Criteria criteria = session.createCriteria(Karyawan.class).
-                    setProjection(Projections.max("kontrak.tanggal_berakhir"));
+            Criteria criteria = session.createCriteria(Karyawan.class).setProjection(Projections.property("id"));
             criteria.addOrder(Order.desc("id"));
             criteria.setMaxResults(1);
             String kodedata = prefix + "0001";
@@ -252,14 +253,14 @@ public class KaryawanController {
             
             Criteria departemenCriteria = session.createCriteria(Departemen.class);
             departemenCriteria.add(Restrictions.eq("id_departemen", departemen));
-            System.out.println("id_departemen " + departemen);
+            //System.out.println("id_departemen " + departemen);
             if(departemenCriteria.uniqueResult() != null)
             {
                 Departemen departemenTemp = new Departemen();
                 departemenTemp = (Departemen) departemenCriteria.uniqueResult();
                 karyawan.setDepartemen(departemenTemp);
             }
-            else System.out.println("ternyata departemenCriteria masih null");
+            //else System.out.println("ternyata departemenCriteria masih null");
             //Departemen departemen = new Departemen();
             karyawan.setId_karyawan(kodedata);
             //karyawan.setDepartemen(null);
@@ -278,23 +279,41 @@ public class KaryawanController {
             }
             kontrak.setId_kontrak(kodekontrak);
             kontrak.setKaryawan(karyawan);
-
+            
             session.save(karyawan);
             session.save(kontrak);
             trx.commit();
             session.close();
         }
         else
-        {
-            
+        {          
             boolean isValid = karyawan.isValid((Karyawan) karyawanCriteria.uniqueResult(), 
                     kontrak_mulai);
-            //System.out.println("karyawan ternyata " + isValid);
+            System.out.println("karyawan ternyata " + isValid);
+            return "isValid";       
         }
 
         return "redirect:/karyawan/input";
     }
     
+    @RequestMapping(value = "karyawan/validasi",produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+    @ResponseBody
+    private String validate(ModelMap model, HttpServletRequest request)
+    {
+        String noKtp = request.getParameter("no_ktp");
+        Karyawan karyawan = new Karyawan();
+        boolean isValid = karyawan.isValid(noKtp);
+        JSONObject jObj = new JSONObject();
+        if(isValid)
+        {
+            jObj.put("is_valid", 1);
+        }
+        else
+        {
+            jObj.put("is_valid", 0);
+        }
+        return jObj.toString();
+    }
     
     
 }

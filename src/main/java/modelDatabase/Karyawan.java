@@ -284,6 +284,21 @@ public class Karyawan implements Serializable{
         }       
     }
     
+    public Boolean isValid(String noKTP)
+    {
+        Session session = hibernateUtil.getSessionFactory().openSession();
+        Criteria karyawanCriteria = session.createCriteria(Karyawan.class);
+        karyawanCriteria.add(Restrictions.eq("no_ktp", noKTP));
+        if(karyawanCriteria.uniqueResult() != null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
     public Boolean isValid(Karyawan karyawan, String new_tanggal_kontrak)
     {
         //final Date now = new Date ();
@@ -297,14 +312,12 @@ public class Karyawan implements Serializable{
             final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
             final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
             final long now = new Date().getTime();
-            System.out.println("kontrak mulai " + kontrakMulai + " now " + now + 
-                    "kontrak berakhir " + kontrakBerakhir);
-            if(kontrakMulai < now && now < kontrakBerakhir)
+            if(kontrakMulai < tanggal_kontrak_baru && tanggal_kontrak_baru < kontrakBerakhir)
             {
                 return true;
             }
             else
-            {
+            { 
                 return false;
             }
         } catch (ParseException ex) {
