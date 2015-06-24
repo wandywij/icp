@@ -34,9 +34,11 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -70,21 +72,107 @@ public class KaryawanController {
         return "karyawan";
     }
 
-    @RequestMapping(value = {"karyawan", ""}, method = RequestMethod.GET)
-    public String loadAll(ModelMap model) {
+    @RequestMapping(value="karyawan/{kode}", method = RequestMethod.GET)
+    public String loadPartial(ModelMap model, @PathVariable(value = "kode") String kode)
+    {
         Session session = hibernateUtil.getSessionFactory().openSession();
+        final String sql = 
+        "SELECT karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal, kontrak.id_kontrak " +
+            "FROM karyawan, kontrak kontrak " + 
+            "where kontrak.id_kontrak = (SELECT kontrak.id_kontrak " +
+            "FROM kontrak " +
+            "WHERE kontrak.id_karyawan = karyawan.id_karyawan " +
+            "ORDER BY kontrak.tanggal_berakhir DESC " +
+            "LIMIT 1 " +
+            ") and karyawan.no_ktp = '" + kode + "'" ; 
+                
+        Query query = session.createSQLQuery(sql);
         
-//        DetachedCriteria maxId = DetachedCriteria.forClass(Kontrak.class, "kontrak")
-//            .setProjection( Projections.max("tanggal_berakhir") );
-//        Criteria criteria = session.createCriteria(Karyawan.class, "karyawan").
-//                createAlias("karyawan.kontrak","kontrak").
-//                setProjection(Projections.max("kontrak.tanggal_berakhir"));
+//        List<Karyawan> karyawans = query.list();
+//        Karyawan karyawan = new Karyawan();
+//        List dataShow = karyawan.getAllKaryawan(karyawans);
+//        model.addAttribute("karyawans", dataShow);
         
-//        String sql = "select karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal " +
-//                " from Karyawan karyawan inner join (" + 
-//                "select kontrak.id_karyawan, max(tanggal_berakhir) as MaxDate, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal " + 
-//                "from Kontrak kontrak group by id_karyawan ) kontrak" +
-//                " on karyawan.id_karyawan = kontrak.id_karyawan";
+        List<Karyawan> result = (List<Karyawan>) query.list(); 
+        Iterator itr = result.iterator();
+        List dataShow = new ArrayList();
+        while(itr.hasNext()){
+           Object[] obj = (Object[]) itr.next();
+           //now you have one array of Object for each row
+//           String client = String.valueOf(obj[0]); // don't know the type of column CLIENT assuming String 
+//           Integer service = Integer.parseInt(String.valueOf(obj[1])); //SERVICE assumed as int
+           Karyawan karyawan = new Karyawan();
+           karyawan.setId_karyawan(obj[1].toString());
+           karyawan.setNama(obj[2].toString());
+           karyawan.setAlamat(obj[3].toString());
+           karyawan.setTempat_lahir(obj[4].toString());
+           karyawan.setTanggal_lahir(new Date());
+           karyawan.setNo_ktp(obj[6].toString());
+           karyawan.setFingerprint(obj[7].toString());
+           Departemen dpt = new Departemen();
+           dpt.setId_departemen(obj[9].toString());
+           karyawan.setKeterangan(obj[8].toString());
+           karyawan.setDepartemen(dpt);
+           Kontrak kont = new Kontrak();
+           
+           
+            try {
+                String tanggalMulai = obj[10].toString();
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                Date tanggalMulaiDate = format.parse(tanggalMulai);
+                
+                String tanggalBerakhir = obj[11].toString();
+                Date tanggalBerakhirDate = format.parse(tanggalBerakhir);
+                
+                kont.setTanggal_mulai(tanggalMulaiDate);
+                kont.setTanggal_berakhir(tanggalBerakhirDate);
+                kont.setGp_awal(Double.parseDouble(obj[12].toString()));
+                
+                List<Kontrak> temp = new ArrayList<Kontrak>();
+                temp.add(kont);
+                karyawan.setKontrak(temp);
+            } catch (ParseException ex) {
+                Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+           
+           Map<String, String> result2 = karyawan.getKaryawan(karyawan);
+           dataShow.add(result2);
+           //same way for all obj[2], obj[3], obj[4]
+        }
+        
+//        List<Karyawan> karyawans = (List<Karyawan>) query.list();
+//        List dataShow = new ArrayList();
+//        for (Karyawan karyawan : karyawans) {
+//            Map<String, String> result = karyawan.getKaryawan(karyawan);
+//
+//            dataShow.add(result);
+//        }
+        Collections.sort(dataShow, new Comparator<Map>() {
+
+            @Override
+            public int compare(Map k1, Map k2) {
+                long sisa1 = Long.parseLong(((String)k1.get("sisa_kontrak")));
+                long sisa2 = Long.parseLong(((String)k2.get("sisa_kontrak")));
+                if (sisa1 < sisa2) return -1;
+                if (sisa1 == sisa2) return 0;
+                return 1;
+            }
+
+//            @Override
+//            public int compare(Karyawan k1, Karyawan k2) {
+//                return (((Kontrak)k1.getKontrak()).getTanggal_berakhir()).compareTo(((Kontrak)k2.getKontrak()).getTanggal_berakhir());
+//            }
+            
+        });
+        model.addAttribute("karyawans", dataShow);
+        session.close();
+        return "daftar_karyawan_2";
+    }
+    
+    @RequestMapping(value = {"karyawan", ""}, method = RequestMethod.GET)
+    public String loadAll(ModelMap model, String kode) {
+        Session session = hibernateUtil.getSessionFactory().openSession();
         final String sql = 
         "SELECT karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal, kontrak.id_kontrak " +
             "FROM karyawan, kontrak kontrak " + 
@@ -314,6 +402,29 @@ public class KaryawanController {
         }
         return jObj.toString();
     }
+    
+    @RequestMapping(value="karyawan.json", produces = "application/json; charset=utf-8", method = RequestMethod.GET)
+    @ResponseBody
+    public String autocompletePegawai(HttpServletRequest request ) {
+        String q = request.getParameter("term");
+        Session session = hibernateUtil.getSessionFactory().openSession();
+        Criteria criteria = session.createCriteria(Karyawan.class);
+        criteria.add(Restrictions.or( Restrictions.like("nama", "%"+q+"%").ignoreCase()
+                ,Restrictions.like("no_ktp", "%"+q+"%").ignoreCase() ));
+        JSONArray jsonArrayy = new JSONArray();
+        try {
+            List<Karyawan> lpegawai = criteria.list();
+            for (Karyawan pg : lpegawai) {
+                jsonArrayy.put(pg.getNama()+" / "+ pg.getNo_ktp());
+            }
+        } catch (Exception ex) {
+
+        }
+        session.close();
+        return jsonArrayy.toString();
+    }
+
+//    
     
     
 }
