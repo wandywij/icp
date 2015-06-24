@@ -1,4 +1,4 @@
- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%-- 
     Document   : pegawaiTambah
     Created on : May 6, 2015, 3:34:56 PM
@@ -50,11 +50,11 @@
                                 </options>
                             </c:forEach>
                     </select>
-<!--                    <option>Produksi</option>
-                    <option>Mekanik</option>
-                    <option>Perlengkapan</option>
-                    <option>Printing</option>
-                    <option>Gudang</option>-->
+                    <!--                    <option>Produksi</option>
+                                        <option>Mekanik</option>
+                                        <option>Perlengkapan</option>
+                                        <option>Printing</option>
+                                        <option>Gudang</option>-->
                     </select>
                 </div>
             </div>
@@ -109,14 +109,36 @@
 //        $("#kontrak_mulai").datepicker({ dateFormat: 'dd-mm-yy' });
 //        $("#kontrak_berakhir").datepicker({ dateFormat: 'dd-mm-yy' });
 
-    $(".datepickerWithYearRange").datepicker(
-                { 
+        $(".datepickerWithYearRange").datepicker(
+                {
                     changeMonth: true,
-                    changeYear: true,   
+                    changeYear: true,
                     showButtonPanel: true,
                     dateFormat: 'dd-mm-yy',
-                    yearRange: "-100:+0",});
+                    yearRange: "-100:+0", });
+
+        $('.form-horizontal').submit(function (e) {
+            e.preventDefault();
+            var thisform = $(this);
+            $.post('${baseURL}karyawan/validasi', thisform.serialize(), function (data) {
+                var jobj = data;
+                if (jobj.is_valid == 1) {
+                    thisform.unbind();
+                    thisform.submit();
+                    //alert("Woi bs ji ");
+                } else {
+                    //$('#msg').text(jobj.msg);
+                    //$('#msg').css('display','block');
+                    alert("Woi nd bs save woi");
+                }
+            });
+        });
+
     });
+
+    
+
+
 
 </script>
 <%@include file="/WEB-INF/layout/footer.jsp" %>
