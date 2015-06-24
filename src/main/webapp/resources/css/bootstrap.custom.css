@@ -5,3 +5,17 @@
 .glyphicon-warning-almost-due{
     color: goldenrod;
 }
+
+.glyphicon-positive{
+    color: lime;
+    font-size: 20px;
+}
+
+.glyphicon-negative{
+    color: crimson;
+    font-size: 20px;
+}
+
+.borderless td, .borderless th, .borderless tbody tr td, .borderless tbody tr th, .borderless thead tr th    {
+    border: none;
+}

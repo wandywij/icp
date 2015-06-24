@@ -14,20 +14,26 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import modelDatabase.Departemen;
 import modelDatabase.Karyawan;
 import modelDatabase.Kontrak;
 import modelDatabase.hibernateUtil;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -66,23 +72,122 @@ public class KaryawanController {
     @RequestMapping(value = {"karyawan", ""}, method = RequestMethod.GET)
     public String loadAll(ModelMap model) {
         Session session = hibernateUtil.getSessionFactory().openSession();
-        Criteria criteria = session.createCriteria(Karyawan.class);
-//        criteria.createAlias("kontrak", "kontrak"); 
-//        criteria.addOrder(Order.desc("kontrak.tanggal_berakhir"));
-//        criteria.setFirstResult(0).setMaxResults(1);
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         
-//        criteria.createAlias("kontrak", "kontrak"); 
-//        criteria.setProjection(Projections.max("kontrak.tanggal_berakhir"));
-        List<Karyawan> karyawans = criteria.list();
+//        DetachedCriteria maxId = DetachedCriteria.forClass(Kontrak.class, "kontrak")
+//            .setProjection( Projections.max("tanggal_berakhir") );
+//        Criteria criteria = session.createCriteria(Karyawan.class, "karyawan").
+//                createAlias("karyawan.kontrak","kontrak").
+//                setProjection(Projections.max("kontrak.tanggal_berakhir"));
+        
+//        String sql = "select karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal " +
+//                " from Karyawan karyawan inner join (" + 
+//                "select kontrak.id_karyawan, max(tanggal_berakhir) as MaxDate, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal " + 
+//                "from Kontrak kontrak group by id_karyawan ) kontrak" +
+//                " on karyawan.id_karyawan = kontrak.id_karyawan";
+        final String sql = 
+        "SELECT karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal, kontrak.id_kontrak, " +
+            "(SELECT COUNT(kontrak.id_karyawan) from kontrak WHERE kontrak.id_karyawan = karyawan.id_karyawan) as jumlah_kontrak, " +
+            "(SELECT SUM(datediff(kontrak.tanggal_berakhir, kontrak.tanggal_mulai)) from kontrak where kontrak.id_karyawan = karyawan.id_karyawan) as total_lama_kontrak " +
+            "FROM karyawan, kontrak kontrak " + 
+            "where kontrak.id_kontrak = (SELECT kontrak.id_kontrak " +
+            "FROM kontrak " +
+            "WHERE kontrak.id_karyawan = karyawan.id_karyawan " +
+            "ORDER BY kontrak.tanggal_berakhir DESC " +
+            "LIMIT 1 " +
+            ")"; 
+                
+        Query query = session.createSQLQuery(sql);
+        
+//        List<Karyawan> karyawans = query.list();
 //        Karyawan karyawan = new Karyawan();
 //        List dataShow = karyawan.getAllKaryawan(karyawans);
 //        model.addAttribute("karyawans", dataShow);
+        
+        List<Karyawan> result = (List<Karyawan>) query.list(); 
+        Iterator itr = result.iterator();
         List dataShow = new ArrayList();
-        for (Karyawan karyawan : karyawans) {
-            Map<String, String> result = karyawan.getKaryawan(karyawan);
-
-            dataShow.add(result);
+        while(itr.hasNext()){
+           Object[] obj = (Object[]) itr.next();
+           //now you have one array of Object for each row
+//           String client = String.valueOf(obj[0]); // don't know the type of column CLIENT assuming String 
+//           Integer service = Integer.parseInt(String.valueOf(obj[1])); //SERVICE assumed as int
+           
+           Karyawan karyawan = new Karyawan();
+           karyawan.setId_karyawan(obj[1].toString());
+           karyawan.setNama(obj[2].toString());
+           karyawan.setAlamat(obj[3].toString());
+           karyawan.setTempat_lahir(obj[4].toString());
+           karyawan.setTanggal_lahir(new Date());
+           karyawan.setNo_ktp(obj[6].toString());
+           karyawan.setFingerprint(obj[7].toString());
+           Departemen dpt = new Departemen();
+           dpt.setId_departemen(obj[9].toString());
+           karyawan.setKeterangan(obj[8].toString());
+           karyawan.setDepartemen(dpt);
+           karyawan.setJumlah_kontrak(Integer.parseInt(obj[14].toString()));
+           karyawan.setTotal_lama_kontrak(Integer.parseInt(obj[15].toString()));
+           
+           Kontrak kont = new Kontrak();
+           
+           
+            try {
+                String tanggalMulai = obj[10].toString();
+                Date tanggalMulaiDate = format.parse(tanggalMulai);
+                
+                String tanggalBerakhir = obj[11].toString();
+                Date tanggalBerakhirDate = format.parse(tanggalBerakhir);
+                
+                kont.setTanggal_mulai(tanggalMulaiDate);
+                kont.setTanggal_berakhir(tanggalBerakhirDate);
+                kont.setGp_awal(Double.parseDouble(obj[12].toString()));
+                
+                List<Kontrak> temp = new ArrayList<Kontrak>();
+                temp.add(kont);
+                karyawan.setKontrak(temp);
+                karyawan.setKontrakDetail(temp);
+            } catch (ParseException ex) {
+                Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+           String sqlKontrak = "SELECT * from kontrak where id_karyawan='"+obj[1].toString()+"' ORDER BY kontrak.tanggal_berakhir DESC";
+           Query queryKontrak = session.createSQLQuery(sqlKontrak);
+           List<Kontrak> detailKontrak = (List<Kontrak>) queryKontrak.list();
+           Iterator itrKontrak = detailKontrak.iterator();
+           List<Kontrak> dataKontrak = new ArrayList();
+           while (itrKontrak.hasNext()) {
+               Object[] objKontrak = (Object[])itrKontrak.next();
+               Kontrak detail = new Kontrak();
+               detail.setId_kontrak(objKontrak[1].toString());
+               detail.setGp_awal(Double.valueOf(objKontrak[5].toString()));
+               detail.setKaryawan(karyawan);
+               try {
+                   Date mulai = format.parse(objKontrak[3].toString());
+                   Date berakhir = format.parse(objKontrak[4].toString());
+                   
+                   detail.setTanggal_mulai(mulai);
+                   detail.setTanggal_berakhir(berakhir);
+               } catch (ParseException ex) {
+                   Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
+               }
+               
+//               Map<String, String> resultKontrak = detail.getKontrak(detail);
+               dataKontrak.add(detail);
+           }
+           karyawan.setKontrakDetail(dataKontrak);
+           
+           Map<String, Object> result2 = karyawan.getKaryawan(karyawan);
+           dataShow.add(result2);
+           //same way for all obj[2], obj[3], obj[4]
         }
+        
+//        List<Karyawan> karyawans = (List<Karyawan>) query.list();
+//        List dataShow = new ArrayList();
+//        for (Karyawan karyawan : karyawans) {
+//            Map<String, String> result = karyawan.getKaryawan(karyawan);
+//
+//            dataShow.add(result);
+//        }
         Collections.sort(dataShow, new Comparator<Map>() {
 
             @Override
@@ -161,7 +266,7 @@ public class KaryawanController {
         if (karyawanCriteria == null) //blm ada di database
         {
             Criteria criteria = session.createCriteria(Karyawan.class).
-                    setProjection(Projections.property("id"));
+                    setProjection(Projections.max("kontrak.tanggal_berakhir"));
             criteria.addOrder(Order.desc("id"));
             criteria.setMaxResults(1);
             String kodedata = prefix + "0001";
@@ -214,10 +319,15 @@ public class KaryawanController {
         }
         else
         {
-            //System.out.println("ini ada mi di database ia karyawanna");
+            
+            boolean isValid = karyawan.isValid((Karyawan) karyawanCriteria.uniqueResult(), 
+                    kontrak_mulai);
+            //System.out.println("karyawan ternyata " + isValid);
         }
 
         return "redirect:/karyawan/input";
     }
+    
+    
     
 }

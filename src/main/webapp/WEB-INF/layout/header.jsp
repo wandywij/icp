@@ -47,6 +47,7 @@
 		<script src="${baseURL}resources/js/jquery.min.js"></script>
 		<script src="${baseURL}resources/js/jquery-ui.min.js"></script>
 		<script src="${baseURL}resources/js/bootstrap.min.js"></script>
+                <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
                 
                 <script src="${baseURL}resources/autocomplete/js/textext.core.js" type="text/javascript" charset="utf-8"></script>
 		<script src="${baseURL}resources/autocomplete/js/textext.plugin.tags.js" type="text/javascript" charset="utf-8"></script>
@@ -77,7 +78,7 @@
 					<ul class="nav navbar-nav">
                                             <li><a href="${baseURL}karyawan/input">Karyawan</a></li>
                                             <li><a href="${baseURL}departemen/input">Bagian</a></li>
-                                            <li><a href="${baseURL}barang/laporan">Penggajian</a></li>
+                                            <li><a href="${baseURL}penggajian">Penggajian</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="#">Keluar</a></li>

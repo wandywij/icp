@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%-- 
     Document   : pegawaiTambah
     Created on : May 6, 2015, 3:34:56 PM
@@ -32,7 +33,7 @@
                 <th colspan="1"></th>
                 <th colspan="1"></th>
                 <th colspan="3">Nama Lengkap</th>
-                <th colspan="1" style="text-align:center">Kontrak ke-</th>
+                <th colspan="1" style="text-align:center">Jumlah Kontrak</th>
                 <th colspan="1" style="text-align:center">Kontrak Mulai</th>
                 <th colspan="1" style="text-align:center">Kontrak Berakhir</th>
                 <th colspan="1" style="text-align:center">Lama Kontrak</th>
@@ -58,7 +59,7 @@
                     </td>
                     <td colspan="1">></td>
                     <td colspan="3"><c:out value="${karyawans.nama_karyawan}" /></td>
-                    <td colspan="1" style="text-align:center" onclick="ShowDetailPopUp();s">
+                    <td colspan="1" style="text-align:center" onclick="ShowDetailPopUp();">
                         <c:out value="${karyawans.jumlah_kontrak}" />
                     </td>
                     <td colspan="1" style="text-align:center"><c:out value="${karyawans.kontrak_mulai}" /></td>
@@ -70,106 +71,111 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                    <td colspan="">
+                    <td colspan="10">
                         <div id="accordion<c:out value="${loop.index}" />" class="collapse">
-                            <table>
+                            <table width="90%">
                                 <tr>
-                                    <td>Alamat</td>
-                                    <td>  :  </td>
-                                    <td><c:out value="${karyawans.alamat}" /></td>
-                                </tr>
-                                <tr>
-                                    <td>Tempat/Tgl Lahir  </td>
-                                    <td>:</td>
-                                    <td><c:out value="${karyawans.tempat_lahir}" />, <c:out value="${karyawans.tgl_lahir}" /></td>
-                                </tr>
-                                <tr>
-                                    <td>No KTP </td>
-                                    <td>  :  </td>
-                                    <td><c:out value="${karyawans.no_ktp}" /></td>
-                                </tr>
-                                <tr>
-                                    <td>Bagian</td>
-                                    <td>  :  </td>
-                                    <td><c:out value="${karyawans.bagian}" /></td>
-                                </tr>
-                                <tr>
-                                    <td>Keterangan</td>
-                                    <td>  :  </td>
-                                    <td><c:out value="${karyawans.keterangan}" /></td>
+                                    <td valign="top" width="50%">
+                                        <table class="table borderless">
+                                            <tr>
+                                                <td>Alamat</td>
+                                                <td>  :  </td>
+                                                <td><c:out value="${karyawans.alamat}" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tempat/Tgl Lahir  </td>
+                                                <td> : </td>
+                                                <td><c:out value="${karyawans.tempat_lahir}" />, <c:out value="${karyawans.tgl_lahir}" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>No KTP </td>
+                                                <td>  :  </td>
+                                                <td><c:out value="${karyawans.no_ktp}" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bagian</td>
+                                                <td>  :  </td>
+                                                <td><c:out value="${karyawans.bagian}" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Keterangan</td>
+                                                <td>  :  </td>
+                                                <td><c:out value="${karyawans.keterangan}" /></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td valign="top" width="50%">
+                                        <table class="table table-bordered" id="tableKontrak<c:out value="${loop.index}" />">
+                                            <tr>
+                                                <th style="text-align:center" width="33%">Kontrak ke-</th>
+                                                <th style="text-align:center" width="33%">Mulai</th>
+                                                <th style="text-align:center" width="33%">Berakhir</th>
+                                            </tr>
+                                            <c:forEach items="${karyawans.detail_kontrak}" var="kontraks" varStatus="loop2">
+                                                <tr>
+                                                    <td style="text-align:center" width="33%"><c:out value="${loop2.index+1}" /></td>
+                                                    <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_mulai}" /></td>
+                                                    <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_berakhir}" /></td>
+                                                </tr>
+                                            </c:forEach>
+                                            <tr id="tambahKontrak<c:out value="${loop.index}" />">
+                                                <td colspan="3" style="text-align:center">
+<!--                                                    <button type="submit" class="btn btn-success btn-add-kontrak" onclick="ClickAddContract(<c:out value='${loop.index}' />)">Tambah Kontrak Baru</button>-->
+                                                    <button type="submit" class="btn btn-success btn-add-kontrak" onclick="addRow(<c:out value='${loop.index}' />)">Tambah Kontrak Baru</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
                     </td>
                 </tr>
             </c:forEach>
-<!--            <tr data-toggle="collapse" data-target="#accordionOne" class="clickable">
-                <td colspan="1"><span class="glyphicon glyphicon-warning-sign glyphicon-warning-contract-end"></span></td>
-                <td colspan="1">></td>
-                <td colspan="3"> Yotsuba</td>
-                <td colspan="1">2</td>
-                <td colspan="1">12/01/2015</td>
-                <td colspan="1">01/03/2015</td>
-                <td colspan="1">48</td>
-                <td colspan="1">350,000</td>
-                <td colspan="1">70</td>
-            </tr>
-            <tr>
-                <td colspan="9">
-                    <div id="accordionOne" class="collapse">
-                        <table>
-                            <tr>
-                                <td>Alamat</td>
-                                <td>  :  </td>
-                                <td>Jl. Gatotkaca Terbang Tinggi 1</td>
-                            </tr>
-                            <tr>
-                                <td>Tempat/Tgl Lahir  </td>
-                                <td>:</td>
-                                <td>Gresik, 9 Maret 1990</td>
-                            </tr>
-                            <tr>
-                                <td>No KTP </td>
-                                <td>  :  </td>
-                                <td>1234567890</td>
-                            </tr>
-                            <tr>
-                                <td>Bagian</td>
-                                <td>  :  </td>
-                                <td>Printing</td>
-                            </tr>
-                            <tr>
-                                <td>Keterangan</td>
-                                <td>  :  </td>
-                                <td>Lorem ipsum doler sit amet. kamehamehameha.</td>
-                            </tr>
-                        </table>
-                    </div>
-                </td>
-            </tr>
-            <tr data-toggle="collapse" data-target="#accordionTwo" class="clickable">
-                <td colspan="1"><span class="glyphicon glyphicon-warning-sign glyphicon-warning-almost-due"></span></td>
-                <td colspan="1">></td>
-                <td colspan="3">Makabe</td>
-                <td colspan="1">1</td>
-                <td colspan="1">03/02/2015</td>
-                <td colspan="1">11/05/2015</td>
-                <td colspan="1">97</td>
-                <td colspan="1">650,000</td>
-                <td colspan="1">97</td>
-            </tr>
-            <tr>
-                <td colspan="9">
-                    <div id="accordionTwo" class="collapse">Hidden by default</div>
-                </td>
-            </tr>-->
         </tbody>
     </table>
 </div>
 
 <script type="text/javascript">
     function ShowDetailPopUp() {
-        popup.Show();
+        popup.Show();   
     }
+    function ClickAddContract(index) {
+        komponen = '<tr>' +
+                '<td style="text-align:center" valign="center" >'+
+                '<span class="glyphicon glyphicon-ok glyphicon-positive"></span> '+
+                '<span class="glyphicon glyphicon-remove glyphicon-negative" onclick="deleteRow('+index+')"></span></td>' +
+                '<td style="text-align:center"><input type="text" class="form-control datepickerWithYearRange" id="kontrakMulai" name="kontrakMulai" placeholder="Kontrak Mulai"></td>' +
+                '<td style="text-align:center"><input type="text" class="form-control datepickerWithYearRange" id="kontrakBerakhir" name="kontrakBerakhir" placeholder="Kontrak Berakhir"></td>';
+//        $('#tableKontrak').append(komponen);
+        $(komponen).insertBefore('#tambahKontrak'+index);
+    };
+    function addRow(idxKar) {
+        var table = document.getElementById('tableKontrak'+idxKar);
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount-1);
+        row.insertCell(0).innerHTML = '<td style="text-align:center" valign="center" width="33%">'+
+                '<span class="glyphicon glyphicon-ok glyphicon-positive"></span> '+
+                '<span class="glyphicon glyphicon-remove glyphicon-negative" onclick="deleteRow('+(rowCount-1)+','+idxKar+')"></span></td>';
+        row.insertCell(1).innerHTML = '<td style="text-align:center" width="33%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakMulai" name="kontrakMulai" placeholder="Kontrak Mulai"></td>';
+        row.insertCell(2).innerHTML = '<td style="text-align:center" width="33%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakBerakhir" name="kontrakBerakhir" placeholder="Kontrak Berakhir"></td>';
+    }
+    function deleteRow(delIndex, idxKar) {
+        try {
+            var table = document.getElementById('tableKontrak'+idxKar);
+            table.deleteRow(delIndex);
+        } catch (e) {
+            alert(e);
+        }
+    }
+    $('body').on('focus',".datepickerWithYearRange", function() {
+       $(this).datepicker(
+                { 
+                    changeMonth: true,
+                    changeYear: true,   
+                    showButtonPanel: true,
+                    dateFormat: 'dd-mm-yy',
+                    yearRange: "-100:+0",})
+    });
 </script>
 <%@include file="/WEB-INF/layout/footer.jsp" %>

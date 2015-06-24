@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -43,10 +45,11 @@ import org.springframework.ui.ModelMap;
 @Table(name="karyawan")
 public class Karyawan implements Serializable{
 
+    
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", unique = true, nullable = false, length = 20)
     private Integer id;
-
+    
     @Id
     @Column(name = "id_karyawan", unique = true, nullable = false, length = 25)
     private String id_karyawan;
@@ -75,9 +78,18 @@ public class Karyawan implements Serializable{
     @Column(name = "keterangan", unique = false, nullable = true, length = 500)
     private String keterangan;
     
+    @Column(name = "jumlah_kontrak", unique = false, nullable = true)
+    private int jumlah_kontrak;
+    
+    @Column(name = "total_lama_kontrak", unique = false, nullable = true)
+    private int total_lama_kontrak;
+
     @OneToMany(mappedBy = "id_karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
     //@OneToMany(mappedBy = "id_karyawan")
     private List<Kontrak> kontrak;
+    
+    @OneToMany(mappedBy = "id_karyawan", cascade = CascadeType.REMOVE, orphanRemoval = true)
+        private List<Kontrak> kontrakDetail;
 
     @ManyToOne
     @JoinColumn(name = "id_departemen")
@@ -165,6 +177,22 @@ public class Karyawan implements Serializable{
         this.keterangan = keterangan;
     }
     
+    public int getJumlah_kontrak() {
+        return jumlah_kontrak;
+    }
+
+    public void setJumlah_kontrak(int jumlah_kontrak) {
+        this.jumlah_kontrak = jumlah_kontrak;
+    }
+    
+    public int getTotal_lama_kontrak() {
+        return total_lama_kontrak;
+    }
+
+    public void setTotal_lama_kontrak(int total_lama_kontrak) {
+        this.total_lama_kontrak = total_lama_kontrak;
+    }
+    
     public Departemen getDepartemen() {
         return departemen;
     }
@@ -218,6 +246,7 @@ public class Karyawan implements Serializable{
         this.kontrak = kontrak;
     }
     
+    
 //    private Kontrak kontrak;
 //    public void setKontrak(Kontrak kontrak) {
 //        this.kontrak = kontrak;
@@ -227,9 +256,9 @@ public class Karyawan implements Serializable{
 //        return kontrak;
 //    }
     
-    public Map<String, String> getKaryawan(Karyawan karyawan)
+    public Map<String, Object> getKaryawan(Karyawan karyawan)
     {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, Object> result = new HashMap<String, Object>();
         result.put("nama_karyawan", karyawan.getNama());
         result.put("alamat", karyawan.getAlamat());
         result.put("tempat_lahir", karyawan.getTempat_lahir());
@@ -238,7 +267,10 @@ public class Karyawan implements Serializable{
         result.put("no_ktp", karyawan.getNo_ktp());
         result.put("bagian", karyawan.getDepartemen().getNama_departemen());
         result.put("keterangan", karyawan.getKeterangan());
-        result.put("jumlah_kontrak", String.valueOf(karyawan.getKontrak().size()));
+        result.put("jumlah_kontrak", String.valueOf(karyawan.getJumlah_kontrak()));
+        result.put("total_hari", String.valueOf(karyawan.getTotal_lama_kontrak()));
+        result.put("detail_kontrak", karyawan.getKontrakDetail());
+        
         int i = karyawan.getKontrak().size() - 1;
         long total_hari = 0;
         if(i >= 0)
@@ -275,7 +307,7 @@ public class Karyawan implements Serializable{
            result.put("gp_awal", df.format(gp_awal));
            result.put("lama_kontrak", String.valueOf(diff));
            result.put("sisa_kontrak", String.valueOf(sisa));
-           result.put("total_hari", String.valueOf(total_hari));
+           
         }
         else
         {
@@ -284,7 +316,6 @@ public class Karyawan implements Serializable{
             result.put("kontrak_berakhir", "12/09/10");
             result.put("lama_kontrak", "0");
             result.put("sisa_kontrak", "0");
-            result.put("total_hari", "0");
         }
         return result;
     }
@@ -295,7 +326,7 @@ public class Karyawan implements Serializable{
         List dataShow = new ArrayList();
         for(Karyawan karyawan : karyawans)
         {
-            Map<String, String> result = getKaryawan(karyawan);
+            Map<String, Object> result = getKaryawan(karyawan);
             dataShow.add(result);
         }
         
@@ -321,6 +352,45 @@ public class Karyawan implements Serializable{
         {
             return null;
         }       
+    }
+    
+    public Boolean isValid(Karyawan karyawan, String new_tanggal_kontrak)
+    {
+        //final Date now = new Date ();
+        //final String todayDate = new SimpleDateFormat("YYYY-MM-dd").format(now);
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+            Date temp = format.parse(new_tanggal_kontrak);
+            final long tanggal_kontrak_baru = temp.getTime();
+            final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
+            final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
+            final long now = new Date().getTime();
+            System.out.println("kontrak mulai " + kontrakMulai + " now " + now + 
+                    "kontrak berakhir " + kontrakBerakhir);
+            if(kontrakMulai < now && now < kontrakBerakhir)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(Karyawan.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+        
+        
+    }
+
+    public List<Kontrak> getKontrakDetail() {
+        return kontrakDetail;
+    }
+
+    public void setKontrakDetail(List<Kontrak> kontrakDetail) {
+        this.kontrakDetail = kontrakDetail;
     }
     
 }
