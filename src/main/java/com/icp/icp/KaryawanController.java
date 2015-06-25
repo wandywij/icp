@@ -137,7 +137,7 @@ public class KaryawanController {
             }
            
            
-           Map<String, String> result2 = karyawan.getKaryawan(karyawan);
+           Map<String, Object> result2 = karyawan.getKaryawan(karyawan);
            dataShow.add(result2);
            //same way for all obj[2], obj[3], obj[4]
         }
@@ -222,6 +222,7 @@ public class KaryawanController {
            
             try {
                 String tanggalMulai = obj[10].toString();
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                 Date tanggalMulaiDate = format.parse(tanggalMulai);
                 
                 String tanggalBerakhir = obj[11].toString();
@@ -238,32 +239,6 @@ public class KaryawanController {
             } catch (ParseException ex) {
                 Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
             }
-           
-           String sqlKontrak = "SELECT * from kontrak where id_karyawan='"+obj[1].toString()+"' ORDER BY kontrak.tanggal_berakhir DESC";
-           Query queryKontrak = session.createSQLQuery(sqlKontrak);
-           List<Kontrak> detailKontrak = (List<Kontrak>) queryKontrak.list();
-           Iterator itrKontrak = detailKontrak.iterator();
-           List<Kontrak> dataKontrak = new ArrayList();
-           while (itrKontrak.hasNext()) {
-               Object[] objKontrak = (Object[])itrKontrak.next();
-               Kontrak detail = new Kontrak();
-               detail.setId_kontrak(objKontrak[1].toString());
-               detail.setGp_awal(Double.valueOf(objKontrak[5].toString()));
-               detail.setKaryawan(karyawan);
-               try {
-                   Date mulai = format.parse(objKontrak[3].toString());
-                   Date berakhir = format.parse(objKontrak[4].toString());
-                   
-                   detail.setTanggal_mulai(mulai);
-                   detail.setTanggal_berakhir(berakhir);
-               } catch (ParseException ex) {
-                   Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
-               }
-               
-//               Map<String, String> resultKontrak = detail.getKontrak(detail);
-               dataKontrak.add(detail);
-           }
-           karyawan.setKontrakDetail(dataKontrak);
            
            Map<String, Object> result2 = karyawan.getKaryawan(karyawan);
            dataShow.add(result2);
@@ -441,17 +416,25 @@ public class KaryawanController {
         String q = request.getParameter("term");
         Session session = hibernateUtil.getSessionFactory().openSession();
         Criteria criteria = session.createCriteria(Karyawan.class);
+        
         criteria.add(Restrictions.or( Restrictions.like("nama", "%"+q+"%").ignoreCase()
                 ,Restrictions.like("no_ktp", "%"+q+"%").ignoreCase() ));
         JSONArray jsonArrayy = new JSONArray();
         try {
             List<Karyawan> lpegawai = criteria.list();
             for (Karyawan pg : lpegawai) {
+                System.out.println("term " + pg.getNama());
                 jsonArrayy.put(pg.getNama()+" / "+ pg.getNo_ktp());
             }
+            
+            
         } catch (Exception ex) {
-
+            
         }
+        for(int i=0;i<5;i++)
+            {
+                jsonArrayy.put(i + "/ iseng");
+            }
         session.close();
         return jsonArrayy.toString();
     }
