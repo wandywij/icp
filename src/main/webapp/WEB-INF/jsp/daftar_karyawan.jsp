@@ -198,6 +198,7 @@
         var table = document.getElementById('tableKontrak'+idxKar);
         var rowCount = table.rows.length;
         var row = table.insertRow(rowCount-1);
+        row.id="tr_"+idxKar+'_'+(rowCount-1);
         row.insertCell(0).innerHTML = '<td style="text-align:center" valign="center" width="33%">'+
                 '<span id="btn_save_'+idxKar+'_'+(rowCount-1)+'" class="glyphicon glyphicon-ok glyphicon-positive"></span> '+
                 '<span id="btn_del_'+idxKar+'_'+(rowCount-1)+'" class="glyphicon glyphicon-remove glyphicon-negative" onclick="deleteRow('+(rowCount-1)+','+idxKar+')"></span></td>';
@@ -207,10 +208,11 @@
     function deleteRow(delIndex, idxKar) {
         try {
             var table = document.getElementById('tableKontrak'+idxKar);
-            for (i=delIndex+1; i<table.rows.length; i++) {
-                document.getElementById("btn_save_"+idxKar+"_"+i).innerHTML+="a";
-            }
-            table.deleteRow(delIndex);
+//            for (i=delIndex+1; i<table.rows.length-1; i++) {
+//                document.getElementById("btn_save_"+idxKar+"_"+i).id = "btn_save_"+idxKar+"_"+(i-1);
+//            }
+            $("#tr_"+idxKar+"_"+delIndex).remove();
+//            table.deleteRow(delIndex);
         } catch (e) {
             alert(e);
         }
