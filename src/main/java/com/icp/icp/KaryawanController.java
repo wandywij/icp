@@ -175,9 +175,10 @@ public class KaryawanController {
     public String loadAll(ModelMap model, String kode) {
         Session session = hibernateUtil.getSessionFactory().openSession();
         final String sql = 
-        "SELECT karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal, kontrak.id_kontrak, " +
+            "SELECT karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal, kontrak.id_kontrak, " +
             "(SELECT COUNT(kontrak.id_karyawan) from kontrak WHERE kontrak.id_karyawan = karyawan.id_karyawan) as jumlah_kontrak, " +
-            "(SELECT SUM(datediff(kontrak.tanggal_berakhir, kontrak.tanggal_mulai)) from kontrak where kontrak.id_karyawan = karyawan.id_karyawan) as total_lama_kontrak " +
+            "(SELECT SUM(datediff(kontrak.tanggal_berakhir, kontrak.tanggal_mulai)) from kontrak where kontrak.id_karyawan = karyawan.id_karyawan) as total_lama_kontrak, " +
+            "(SELECT departemen.nama_departemen from departemen WHERE id_departemen = karyawan.id_departemen) as bagian " +
             "FROM karyawan, kontrak kontrak " + 
             "where kontrak.id_kontrak = (SELECT kontrak.id_kontrak " +
             "FROM kontrak " +
@@ -185,7 +186,7 @@ public class KaryawanController {
             "ORDER BY kontrak.tanggal_berakhir DESC " +
             "LIMIT 1 " +
             ")"; 
-                
+        
         Query query = session.createSQLQuery(sql);
         
 //        List<Karyawan> karyawans = query.list();
@@ -196,6 +197,8 @@ public class KaryawanController {
         List<Karyawan> result = (List<Karyawan>) query.list(); 
         Iterator itr = result.iterator();
         List dataShow = new ArrayList();
+//        Date lastStart = null, lastEnd = null;
+        List<Kontrak> tempList = new ArrayList<Kontrak>();
         while(itr.hasNext()){
            Object[] obj = (Object[]) itr.next();
            //now you have one array of Object for each row
@@ -212,33 +215,56 @@ public class KaryawanController {
            karyawan.setFingerprint(obj[7].toString());
            Departemen dpt = new Departemen();
            dpt.setId_departemen(obj[9].toString());
+           dpt.setNama_departemen(obj[16].toString());
            karyawan.setKeterangan(obj[8].toString());
            karyawan.setDepartemen(dpt);
            karyawan.setJumlah_kontrak(Integer.parseInt(obj[14].toString()));
            karyawan.setTotal_lama_kontrak(Integer.parseInt(obj[15].toString()));
-           
-           Kontrak kont = new Kontrak();
-           
-           
-            try {
+           try {
                 String tanggalMulai = obj[10].toString();
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                 Date tanggalMulaiDate = format.parse(tanggalMulai);
-                
+
                 String tanggalBerakhir = obj[11].toString();
                 Date tanggalBerakhirDate = format.parse(tanggalBerakhir);
-                
-                kont.setTanggal_mulai(tanggalMulaiDate);
-                kont.setTanggal_berakhir(tanggalBerakhirDate);
-                kont.setGp_awal(Double.parseDouble(obj[12].toString()));
-                
-                List<Kontrak> temp = new ArrayList<Kontrak>();
-                temp.add(kont);
-                karyawan.setKontrak(temp);
-                karyawan.setKontrakDetail(temp);
+
+                Kontrak temp = new Kontrak();
+                temp.setTanggal_mulai(tanggalMulaiDate);
+                temp.setTanggal_berakhir(tanggalBerakhirDate);
+                temp.setGp_awal(Double.parseDouble(obj[12].toString()));
+                tempList.add(temp);
             } catch (ParseException ex) {
                 Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
             }
+           
+           final String sqlKontrak = "SELECT * FROM kontrak WHERE id_karyawan='" + obj[1].toString() + "'";
+           System.out.println("sql "+sqlKontrak);
+           Query kontrakQuery = session.createSQLQuery(sqlKontrak);
+           List<Kontrak> resultKontrak = (List<Kontrak>) kontrakQuery.list(); 
+           Iterator itrKontrak = resultKontrak.iterator();
+           List<Kontrak> detail = new ArrayList<Kontrak>();
+           while(itrKontrak.hasNext()){
+               Object[] objKontrak  = (Object[]) itrKontrak.next();
+               Kontrak kont = new Kontrak();
+                try {
+                    String tanggalMulai = objKontrak[3].toString();
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                    Date tanggalMulaiDate = format.parse(tanggalMulai);
+
+                    String tanggalBerakhir = objKontrak[4].toString();
+                    Date tanggalBerakhirDate = format.parse(tanggalBerakhir);
+
+                    kont.setTanggal_mulai(tanggalMulaiDate);
+                    kont.setTanggal_berakhir(tanggalBerakhirDate);
+                    kont.setGp_awal(Double.parseDouble(objKontrak[5].toString()));
+                    
+                    detail.add(kont);
+                } catch (ParseException ex) {
+                    Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+           karyawan.setKontrak(tempList);
+           karyawan.setKontrakDetail(detail);
            
            Map<String, Object> result2 = karyawan.getKaryawan(karyawan);
            dataShow.add(result2);
