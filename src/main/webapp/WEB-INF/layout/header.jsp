@@ -78,7 +78,7 @@
 					<ul class="nav navbar-nav">
                                             <li><a href="${baseURL}karyawan/input">Karyawan</a></li>
                                             <li><a href="${baseURL}departemen/input">Bagian</a></li>
-                                            <li><a href="${baseURL}penggajian">Penggajian</a></li>
+                                            <li><a href="${baseURL}penggajian/input">Penggajian</a></li>
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="#">Keluar</a></li>

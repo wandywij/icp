@@ -259,6 +259,7 @@ public class Karyawan implements Serializable{
     public Map<String, Object> getKaryawan(Karyawan karyawan)
     {
         Map<String, Object> result = new HashMap<String, Object>();
+        result.put("id_karyawan", karyawan.getId_karyawan());
         result.put("nama_karyawan", karyawan.getNama());
         result.put("alamat", karyawan.getAlamat());
         result.put("tempat_lahir", karyawan.getTempat_lahir());
@@ -369,33 +370,58 @@ public class Karyawan implements Serializable{
         }
     }
     
-    public Boolean isValid(Karyawan karyawan, String new_tanggal_kontrak)
-    {
+    public Boolean isValid(Karyawan karyawan, String new_tanggal_kontrak) {
         //final Date now = new Date ();
         //final String todayDate = new SimpleDateFormat("YYYY-MM-dd").format(now);
         //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        
+
         try {
             SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
             Date temp = format.parse(new_tanggal_kontrak);
             final long tanggal_kontrak_baru = temp.getTime();
-            final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
-            final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
-            final long now = new Date().getTime();
-            if(kontrakMulai < tanggal_kontrak_baru && tanggal_kontrak_baru < kontrakBerakhir)
+            long kontrakMulai = 0;
+            long kontrakBerakhir = 0;
+            for(Kontrak kontrak : karyawan.getKontrak())
             {
-                return true;
+                if(kontrakMulai < kontrak.getTanggal_mulai().getTime())
+                    kontrakMulai = kontrak.getTanggal_mulai().getTime();
+                
+                if(kontrakBerakhir < kontrak.getTanggal_berakhir().getTime())
+                    kontrakBerakhir = kontrak.getTanggal_berakhir().getTime();
             }
-            else
-            { 
+            
+            
+            //final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
+            //final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
+            final long now = new Date().getTime();
+
+            if (kontrakMulai < tanggal_kontrak_baru) {
+                System.out.println("kontrakMulai " + kontrakMulai + " < "
+                        + "tanggalKontrakBaru " + tanggal_kontrak_baru);
+            }
+            if (tanggal_kontrak_baru > kontrakBerakhir) {
+                System.out.println("tanggal kontrak baru " + tanggal_kontrak_baru
+                        + " > " + "kontrakberakhir " + kontrakBerakhir);
+            }
+//            if(kontrakMulai < tanggal_kontrak_baru && tanggal_kontrak_baru > kontrakBerakhir)
+//            {
+//                return true;
+//            }
+//            else
+//            { 
+//                return false;
+//            }
+            
+            if (tanggal_kontrak_baru > kontrakBerakhir) {
+                return true;
+            } else {
                 return false;
             }
         } catch (ParseException ex) {
             Logger.getLogger(Karyawan.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-        
-        
+
     }
 
     public List<Kontrak> getKontrakDetail() {

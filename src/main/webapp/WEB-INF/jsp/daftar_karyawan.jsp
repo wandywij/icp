@@ -9,12 +9,7 @@
 <%@include file="/WEB-INF/layout/header.jsp" %>
 
 <div class="row">
-    <table class="table">
-        <colgroup>
-            <col width="140"/>
-            <col/>
-            <col width="140" />
-        </colgroup>
+    <table class="table borderless">
         <tr>
             <td>
 <!--                <h1>Daftar Karyawan <button type="submit" class="btn btn-success text-right" >Go</button></h1>-->
@@ -22,7 +17,15 @@
                         <span>Daftar Karyawan</span>
                     </h1>
             </td>
-            <td class="pull-right">
+            <td>
+                <form class="pull-right form-inline">
+                    <input type="text" class="form-control" id="search_karyawan" name="search_karyawan" 
+                           style="text-align: right;" placeholder="Nama / No KTP"/>
+                    <button type="submit" class="btn btn-success">Tambah Karyawan</button>
+                    <button class="btn btn-success">Cari</button>
+                </form>
+            </td>
+<!--            <td class="pull-right">
                 <button type="submit" class="btn btn-success">Tambah Karyawan</button>
             </td>
 
@@ -35,7 +38,7 @@
                     <input type="text" class="form-control" id="search_karyawan" name="search_karyawan" 
                            style="text-align: right;" placeholder="Nama / No KTP"/>
                 </div>
-            </td>  
+            </td>  -->
         </tr>
             
                 
@@ -118,26 +121,30 @@
                                         </table>
                                     </td>
                                     <td valign="top" width="50%">
+                                        <form class="form-kontrak" method="post">
                                         <table class="table table-bordered" id="tableKontrak<c:out value="${loop.index}" />">
                                             <tr>
                                                 <th style="text-align:center" width="33%">Kontrak ke-</th>
-                                                <th style="text-align:center" width="33%">Mulai</th>
+                                                <th style="text-align:center" width="33%"">Mulai</th>
                                                 <th style="text-align:center" width="33%">Berakhir</th>
+                                                
                                             </tr>
                                             <c:forEach items="${karyawans.detail_kontrak}" var="kontraks" varStatus="loop2">
                                                 <tr>
                                                     <td style="text-align:center" width="33%"><c:out value="${loop2.index+1}" /></td>
                                                     <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_mulai}" /></td>
                                                     <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_berakhir}" /></td>
+                                                    <td><input type="text" value="<c:out value="${karyawans.id_karyawan}"/>"></th>
                                                 </tr>
                                             </c:forEach>
                                             <tr id="tambahKontrak<c:out value="${loop.index}" />">
                                                 <td colspan="3" style="text-align:center">
 <!--                                                    <button type="submit" class="btn btn-success btn-add-kontrak" onclick="ClickAddContract(<c:out value='${loop.index}' />)">Tambah Kontrak Baru</button>-->
-                                                    <button type="submit" class="btn btn-success btn-add-kontrak" onclick="addRow(<c:out value='${loop.index}' />)">Tambah Kontrak Baru</button>
+                                                    <button class="btn btn-success btn-add-kontrak" onclick="addRow(<c:out value='${loop.index}' />)">Tambah Kontrak Baru</button>
                                                 </td>
                                             </tr>
                                         </table>
+                                        </form>
                                     </td>
                                 </tr>
                             </table>
@@ -187,8 +194,8 @@
     function ClickAddContract(index) {
         komponen = '<tr>' +
                 '<td style="text-align:center" valign="center" >'+
-                '<span class="glyphicon glyphicon-ok glyphicon-positive"></span> '+
-                '<span class="glyphicon glyphicon-remove glyphicon-negative" onclick="deleteRow('+index+')"></span></td>' +
+                '<span class="glyphicon glyphicon-ok glyphicon-positive cursor-pointer"></span> '+
+                '<span class="glyphicon glyphicon-remove glyphicon-negative cursor-pointer" onclick="deleteRow('+index+')"></span></td>' +
                 '<td style="text-align:center"><input type="text" class="form-control datepickerWithYearRange" id="kontrakMulai" name="kontrakMulai" placeholder="Kontrak Mulai"></td>' +
                 '<td style="text-align:center"><input type="text" class="form-control datepickerWithYearRange" id="kontrakBerakhir" name="kontrakBerakhir" placeholder="Kontrak Berakhir"></td>';
 //        $('#tableKontrak').append(komponen);
@@ -200,8 +207,9 @@
         var row = table.insertRow(rowCount-1);
         row.id="tr_"+idxKar+'_'+(rowCount-1);
         row.insertCell(0).innerHTML = '<td style="text-align:center" valign="center" width="33%">'+
-                '<span id="btn_save_'+idxKar+'_'+(rowCount-1)+'" class="glyphicon glyphicon-ok glyphicon-positive"></span> '+
-                '<span id="btn_del_'+idxKar+'_'+(rowCount-1)+'" class="glyphicon glyphicon-remove glyphicon-negative" onclick="deleteRow('+(rowCount-1)+','+idxKar+')"></span></td>';
+                '<button type="submit" id="btn_save_'+idxKar+'_'+(rowCount-1)+'" class="glyphicon glyphicon-ok glyphicon-positive cursor-pointer"></button>' +
+//                '<span id="btn_save_'+idxKar+'_'+(rowCount-1)+'" class="glyphicon glyphicon-ok glyphicon-positive cursor-pointer"></span> '+
+                '<span id="btn_del_'+idxKar+'_'+(rowCount-1)+'" class="glyphicon glyphicon-remove glyphicon-negative cursor-pointer" onclick="deleteRow('+(rowCount-1)+','+idxKar+')"></span></td>';
         row.insertCell(1).innerHTML = '<td style="text-align:center" width="33%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakMulai" name="kontrakMulai" placeholder="Kontrak Mulai"></td>';
         row.insertCell(2).innerHTML = '<td style="text-align:center" width="33%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakBerakhir" name="kontrakBerakhir" placeholder="Kontrak Berakhir"></td>';
     }
@@ -225,6 +233,20 @@
                     showButtonPanel: true,
                     dateFormat: 'dd-mm-yy',
                     yearRange: "-100:+0",})
+    });
+    $('.form-kontrak').submit(function (e) {
+        e.preventDefault();
+        var thisform = $(this);
+        $.post('${baseURL}karyawan/input', thisform.serialize(), function (data) {
+            var jobj = data;
+            if (jobj.message == "error1") {
+                thisform.unbind();
+//                    thisform.submit();
+                alert("Woi nd bs save woi 2");
+            } else {
+                alert("Woi nd bs save woi");
+            }
+        });
     });
 </script>
 <%@include file="/WEB-INF/layout/footer.jsp" %>

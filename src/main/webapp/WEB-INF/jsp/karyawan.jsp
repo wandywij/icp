@@ -120,16 +120,12 @@
         $('.form-horizontal').submit(function (e) {
             e.preventDefault();
             var thisform = $(this);
-            $.post('${baseURL}karyawan/validasi', thisform.serialize(), function (data) {
+            $.post('${baseURL}karyawan/input', thisform.serialize(), function (data) {
                 var jobj = data;
-                if (jobj.is_valid == 1) {
-                    thisform.unbind();
-                    thisform.submit();
-                    //alert("Woi bs ji ");
-                } else {
-                    //$('#msg').text(jobj.msg);
-                    //$('#msg').css('display','block');
-                    alert("Woi nd bs save woi");
+                if (jobj.error == "error") {
+                    //thisform.unbind();
+//                    thisform.submit();
+                    alert(jobj.message);
                 }
             });
         });
