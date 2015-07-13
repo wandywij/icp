@@ -134,7 +134,7 @@
                                                     <td style="text-align:center" width="33%"><c:out value="${loop2.index+1}" /></td>
                                                     <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_mulai}" /></td>
                                                     <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_berakhir}" /></td>
-                                                    <td><input type="text" value="<c:out value="${karyawans.id_karyawan}"/>"></th>
+                                                    <td><input type="text" name="id_karyawan" value="<c:out value="${karyawans.id_karyawan}"/>"></th>
                                                 </tr>
                                             </c:forEach>
                                             <tr id="tambahKontrak<c:out value="${loop.index}" />">
@@ -237,15 +237,16 @@
     $('.form-kontrak').submit(function (e) {
         e.preventDefault();
         var thisform = $(this);
-        $.post('${baseURL}karyawan/input', thisform.serialize(), function (data) {
+        $.post('${baseURL}karyawan/specific/input', thisform.serialize(), function (data) {
             var jobj = data;
-            if (jobj.message == "error1") {
+            if (jobj.error == "error") {
                 thisform.unbind();
 //                    thisform.submit();
-                alert("Woi nd bs save woi 2");
-            } else {
-                alert("Woi nd bs save woi");
-            }
+                alert(jobj.messsage);
+            } 
+//            else {
+//                alert("Woi nd bs save woi");
+//            }
         });
     });
 </script>

@@ -302,7 +302,90 @@ public class KaryawanController {
         return "daftar_karyawan";
     }
 
-    @RequestMapping(value = "karyawan/input", produces = "applicatoin/json; charset=utf-8", method = RequestMethod.POST)
+    @RequestMapping(value = "karyawan/specific/input", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
+    @ResponseBody
+    public String saveContractOnly(ModelMap model, HttpServletRequest request) {
+        try {
+            final String tanggal_kontrak_mulai = request.getParameter("kontrakMulai");
+            final String tanggal_kontrak_berakhir = request.getParameter("kontrakBerakhir");
+            final String id_karyawan = request.getParameter("id_karyawan");
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+            Date temp;
+            temp = format.parse(tanggal_kontrak_mulai);
+            final long tanggal_mulai_kontrak_baru = temp.getTime();
+            temp = format.parse(tanggal_kontrak_berakhir);
+            final long tanggal_berakhir_kontrak_baru = temp.getTime();
+            if (tanggal_mulai_kontrak_baru > tanggal_berakhir_kontrak_baru) {
+                JSONObject jobj = new JSONObject();
+                jobj.put("error", "error");
+                jobj.put("message", "Maaf, tanggal kontrak berakhir harus lebih besar daripada tanggal kontrak mulai");
+                return jobj.toString();
+            } else {
+                Session session = hibernateUtil.getSessionFactory().openSession();
+                Transaction trx = session.beginTransaction();
+//            Criteria criteria = session.createCriteria(Kontrak.class);
+//            criteria.add(Restrictions.eq("id_karyawan", id_karyawan));
+
+                Criteria karyawanCriteria = session.createCriteria(Karyawan.class);
+                karyawanCriteria.add(Restrictions.eq("id_karyawan", id_karyawan));
+                final Karyawan tempKaryawan = (Karyawan) karyawanCriteria.uniqueResult();
+                Karyawan karyawan = new Karyawan();
+                boolean isValid = karyawan.isValid(tempKaryawan,
+                        tanggal_kontrak_mulai);
+
+                if (isValid) {
+
+                    Criteria criteria = session.createCriteria(Kontrak.class).
+                            setProjection(Projections.property("id"));
+
+                    //.add(Property.forName("tanggal_berakhir").eq(maxQuery));
+                    criteria.addOrder(Order.desc("id"));
+                    criteria.setMaxResults(1);
+                    String kodekontrak = prefix_kontrak + "0001";
+                    if (criteria.uniqueResult() != null) {
+                        kodekontrak = String.valueOf(Integer.valueOf(criteria.uniqueResult().toString()) + 1);
+                        while (kodekontrak.length() < 4) {
+                            kodekontrak = "0" + kodekontrak;
+                        }
+                        kodekontrak = prefix_kontrak + kodekontrak;
+                    }
+                    Kontrak kontrak = new Kontrak();
+                    kontrak.setId_kontrak(kodekontrak);
+                    kontrak.setKaryawan(tempKaryawan);
+                    try {
+                        kontrak.setTanggal_mulai(format.parse(tanggal_kontrak_mulai));
+                    } catch (ParseException pe) {
+                        pe.printStackTrace();
+                        kontrak.setTanggal_mulai(new Date());
+                    }
+                    try {
+                        kontrak.setTanggal_berakhir(format.parse(tanggal_kontrak_berakhir));
+                    } catch (ParseException pe) {
+                        pe.printStackTrace();
+                        kontrak.setTanggal_berakhir(new Date());
+                    }
+                    kontrak.setGp_awal(199999 * 1.0);
+                    //session.update(tempKaryawan);
+                    session.save(kontrak);
+                    trx.commit();
+                    session.close();
+
+                    return "";
+                } else {
+                    JSONObject jobj = new JSONObject();
+                    jobj.put("error", "error");
+                    jobj.put("message", "Maaf, kontrak untuk karyawan ini masih berlaku");
+                    return jobj.toString();
+                }
+            }
+
+        } catch (ParseException ex) {
+            Logger.getLogger(KaryawanController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "oke";
+    }
+
+    @RequestMapping(value = "karyawan/input", produces = "application/json; charset=utf-8", method = RequestMethod.POST)
     @ResponseBody
     public String save(ModelMap model, HttpServletRequest request) {
         final String nama_karyawan = request.getParameter("nama_karyawan");
@@ -422,7 +505,6 @@ public class KaryawanController {
                     final Karyawan tempKaryawan = (Karyawan) karyawanCriteria.uniqueResult();
                     boolean isValid = karyawan.isValid(tempKaryawan,
                             kontrak_mulai);
-                    System.out.println("isValid " + isValid);
                     if (isValid) {
 
                         Criteria criteria = session.createCriteria(Kontrak.class).
