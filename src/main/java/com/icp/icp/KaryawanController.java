@@ -216,8 +216,8 @@ public class KaryawanController {
             dpt.setNama_departemen(obj[16].toString());
             karyawan.setKeterangan(obj[8].toString());
             karyawan.setDepartemen(dpt);
-            karyawan.setJumlah_kontrak(Integer.parseInt(obj[14].toString()));
-            karyawan.setTotal_lama_kontrak(Integer.parseInt(obj[15].toString()));
+//            karyawan.setJumlah_kontrak(Integer.parseInt(obj[14].toString()));
+//            karyawan.setTotal_lama_kontrak(Integer.parseInt(obj[15].toString()));
             try {
                 String tanggalMulai = obj[10].toString();
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -266,6 +266,8 @@ public class KaryawanController {
             karyawan.setKontrakDetail(detail);
 
             Map<String, Object> result2 = karyawan.getKaryawan(karyawan);
+            result2.put("jumlah_kontrak", Integer.parseInt(obj[14].toString()));
+            result2.put("total_hari", Integer.parseInt(obj[15].toString()));
             dataShow.add(result2);
             //same way for all obj[2], obj[3], obj[4]
         }

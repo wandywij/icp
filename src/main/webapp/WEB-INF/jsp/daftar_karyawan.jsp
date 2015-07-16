@@ -240,9 +240,9 @@
         $.post('${baseURL}karyawan/specific/input', thisform.serialize(), function (data) {
             var jobj = data;
             if (jobj.error == "error") {
-                thisform.unbind();
+                //thisform.unbind();
 //                    thisform.submit();
-                alert(jobj.messsage);
+                alert(jobj.message);
             } 
 //            else {
 //                alert("Woi nd bs save woi");

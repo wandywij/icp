@@ -12,6 +12,7 @@ import java.util.Map;
 import modelDatabase.Departemen;
 import modelDatabase.hibernateUtil;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
