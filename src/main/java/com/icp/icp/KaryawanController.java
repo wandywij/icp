@@ -171,7 +171,7 @@ public class KaryawanController {
     }
 
     @RequestMapping(value = {"karyawan", ""}, method = RequestMethod.GET)
-    public String loadAll(ModelMap model, String kode) {
+    public String loadAll(ModelMap model) {
         Session session = hibernateUtil.getSessionFactory().openSession();
         final String sql
                 = "SELECT karyawan.*, kontrak.tanggal_mulai, kontrak.tanggal_berakhir, kontrak.gp_awal, kontrak.id_kontrak, "
@@ -187,11 +187,6 @@ public class KaryawanController {
                 + ")";
 
         Query query = session.createSQLQuery(sql);
-
-//        List<Karyawan> karyawans = query.list();
-//        Karyawan karyawan = new Karyawan();
-//        List dataShow = karyawan.getAllKaryawan(karyawans);
-//        model.addAttribute("karyawans", dataShow);
         List<Karyawan> result = (List<Karyawan>) query.list();
         Iterator itr = result.iterator();
         List dataShow = new ArrayList();
@@ -237,7 +232,6 @@ public class KaryawanController {
 
             final String sqlKontrak = "SELECT * FROM kontrak WHERE id_karyawan='" + obj[1].toString() + "' "
                     + "ORDER BY tanggal_berakhir ASC";
-            System.out.println("sql " + sqlKontrak);
             Query kontrakQuery = session.createSQLQuery(sqlKontrak);
             List<Kontrak> resultKontrak = (List<Kontrak>) kontrakQuery.list();
             Iterator itrKontrak = resultKontrak.iterator();
@@ -311,6 +305,14 @@ public class KaryawanController {
             final String tanggal_kontrak_mulai = request.getParameter("kontrakMulai");
             final String tanggal_kontrak_berakhir = request.getParameter("kontrakBerakhir");
             final String id_karyawan = request.getParameter("id_karyawan");
+            long gp = -3;
+            try {
+               gp = Long.parseLong(request.getParameter("gp"));
+            } catch (Exception e) {
+            }
+            
+            final String indexKe = request.getParameter("indexKe");
+            final String kontrakKe = request.getParameter("kontrakKe");
             SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
             Date temp;
             temp = format.parse(tanggal_kontrak_mulai);
@@ -322,7 +324,16 @@ public class KaryawanController {
                 jobj.put("error", "error");
                 jobj.put("message", "Maaf, tanggal kontrak berakhir harus lebih besar daripada tanggal kontrak mulai");
                 return jobj.toString();
-            } else {
+            } 
+            else if(gp == -3)
+            {
+                
+                JSONObject jobj = new JSONObject();
+                jobj.put("error", "error");
+                jobj.put("message", "Maaf, gp awal harus diisi terlebih dahulu");
+                return jobj.toString();
+            }
+            else {
                 Session session = hibernateUtil.getSessionFactory().openSession();
                 Transaction trx = session.beginTransaction();
 //            Criteria criteria = session.createCriteria(Kontrak.class);
@@ -366,13 +377,18 @@ public class KaryawanController {
                         pe.printStackTrace();
                         kontrak.setTanggal_berakhir(new Date());
                     }
-                    kontrak.setGp_awal(199999 * 1.0);
+                    kontrak.setGp_awal(gp * 1.0);
                     //session.update(tempKaryawan);
                     session.save(kontrak);
                     trx.commit();
                     session.close();
-
-                    return "";
+                    
+                    JSONObject jobj = new JSONObject();
+                    jobj.put("tanggal_mulai", tanggal_kontrak_mulai);
+                    jobj.put("tanggal_berakhir", tanggal_kontrak_berakhir);
+                    jobj.put("indexKe", indexKe);
+                    jobj.put("kontrakKe", Integer.parseInt(kontrakKe) + 1);
+                    return jobj.toString();
                 } else {
                     JSONObject jobj = new JSONObject();
                     jobj.put("error", "error");
@@ -399,12 +415,15 @@ public class KaryawanController {
         final String departemen = request.getParameter("bagian");
         final String kontrak_mulai = request.getParameter("kontrak_mulai");
         final String kontrak_berakhir = request.getParameter("kontrak_berakhir");
-        final double gp_awal = Double.parseDouble(request.getParameter("gp_awal"));
+        Double gp_awal = -3 * 1.0;
+        try {
+            gp_awal = Double.parseDouble(request.getParameter("gp_awal"));
+        } catch (Exception e) {
+        }
         final String no_absen = request.getParameter("no_absen");
         final String keterangan = request.getParameter("keterangan");
 
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-
         try {
             Date temp;
             temp = format.parse(kontrak_mulai);
@@ -418,7 +437,15 @@ public class KaryawanController {
                 jobj.put("message", "Maaf, tanggal kontrak berakhir harus lebih besar daripada tanggal kontrak mulai");
                 return jobj.toString();
 
-            } else {
+            }
+            else if(gp_awal == -3 * 1.0) 
+            {
+                JSONObject jobj = new JSONObject();
+                jobj.put("error", "error");
+                jobj.put("message", "Maaf, gp awal harus diisi terlebih dahulu");
+                return jobj.toString();
+            }
+            else {
                 Session session = hibernateUtil.getSessionFactory().openSession();
                 Transaction trx = session.beginTransaction();
 
@@ -594,9 +621,7 @@ public class KaryawanController {
         } catch (Exception ex) {
 
         }
-        for (int i = 0; i < 5; i++) {
-            jsonArrayy.put(i + "/ iseng");
-        }
+        
         session.close();
         return jsonArrayy.toString();
     }

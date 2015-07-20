@@ -73,7 +73,7 @@
             <div class="form-group">
                 <label for="gp_awal" class="col-xs-2 control-label">GP Awal</label>
                 <div class="col-xs-10">
-                    <input type="text" class="form-control" id="gp_awal" name="gp_awal" placeholder="GP Awal">
+                    <input type="text" class="form-control numberfilter" id="gp_awal" name="gp_awal" placeholder="GP Awal">
                 </div>
             </div>
             <div class="form-group">
@@ -99,16 +99,6 @@
 
 <script>
     $(function () {
-//        $("#tanggal_lahir").datepicker(
-//                { 
-//                    changeMonth: true,
-//                    changeYear: true,   
-//                    showButtonPanel: true,
-//                    dateFormat: 'dd-mm-yy',
-//                    yearRange: "-100:+0",});
-//        $("#kontrak_mulai").datepicker({ dateFormat: 'dd-mm-yy' });
-//        $("#kontrak_berakhir").datepicker({ dateFormat: 'dd-mm-yy' });
-
         $(".datepickerWithYearRange").datepicker(
                 {
                     changeMonth: true,
@@ -129,12 +119,8 @@
                 }
             });
         });
-
     });
-
     
-
-
 
 </script>
 <%@include file="/WEB-INF/layout/footer.jsp" %>

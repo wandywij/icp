@@ -375,7 +375,7 @@ public class Karyawan implements Serializable {
 
             //final long kontrakMulai = karyawan.getKontrak().get(0).getTanggal_mulai().getTime();
             //final long kontrakBerakhir = karyawan.getKontrak().get(0).getTanggal_berakhir().getTime();
-            final long now = new Date().getTime();
+            //final long now = new Date().getTime();
 
             if (kontrakMulai < tanggal_kontrak_baru) {
                 System.out.println("kontrakMulai " + kontrakMulai + " < "
@@ -394,7 +394,8 @@ public class Karyawan implements Serializable {
 //                return false;
 //            }
 
-            if (tanggal_kontrak_baru > kontrakBerakhir) {
+            if (tanggal_kontrak_baru > kontrakBerakhir && 
+                    tanggal_kontrak_baru != kontrakMulai) {
                 return true;
             } else {
                 return false;
