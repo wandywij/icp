@@ -396,8 +396,10 @@ public class Karyawan implements Serializable {
 
             if (tanggal_kontrak_baru > kontrakBerakhir && 
                     tanggal_kontrak_baru != kontrakMulai) {
+                System.out.println("true");
                 return true;
             } else {
+                System.out.println("false");
                 return false;
             }
         } catch (ParseException ex) {

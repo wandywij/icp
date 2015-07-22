@@ -330,7 +330,7 @@ public class KaryawanController {
                 
                 JSONObject jobj = new JSONObject();
                 jobj.put("error", "error");
-                jobj.put("message", "Maaf, gp awal harus diisi terlebih dahulu");
+                jobj.put("message", "Maaf, gaji pokok awal harus diisi terlebih dahulu");
                 return jobj.toString();
             }
             else {
@@ -388,11 +388,12 @@ public class KaryawanController {
                     jobj.put("tanggal_berakhir", tanggal_kontrak_berakhir);
                     jobj.put("indexKe", indexKe);
                     jobj.put("kontrakKe", Integer.parseInt(kontrakKe) + 1);
+                    jobj.put("gp_awal", gp);
                     return jobj.toString();
                 } else {
                     JSONObject jobj = new JSONObject();
                     jobj.put("error", "error");
-                    jobj.put("message", "Maaf, kontrak untuk karyawan ini masih berlaku");
+                    jobj.put("message", "Maaf, kontrak untuk karyawan ini masih berlaku pada tanggal tersebut");
                     return jobj.toString();
                 }
             }

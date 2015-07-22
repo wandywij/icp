@@ -1,4 +1,4 @@
-<%-- 
+    <%-- 
     Document   : header
     Created on : May 4, 2015
     Author     : fas
@@ -76,7 +76,7 @@
 				</div>
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-                                            <li><a href="${baseURL}karyawan/input">Karyawan</a></li>
+                                            <li><a href="${baseURL}">Karyawan</a></li>
                                             <li><a href="${baseURL}departemen/input">Bagian</a></li>
                                             <li><a href="${baseURL}penggajian/input">Penggajian</a></li>
 					</ul>

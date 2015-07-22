@@ -21,8 +21,8 @@
                 <form class="pull-right form-inline">
                     <input type="text" class="form-control" id="search_karyawan" name="search_karyawan" 
                            style="text-align: right;" placeholder="Nama / No KTP"/>
-                    <button type="submit" class="btn btn-success">Tambah Karyawan</button>
                     <button class="btn btn-success">Cari</button>
+                    <div class="btn btn-success" onclick="tambahKaryawan()">Tambah Karyawan</div>
                 </form>
             </td>
             <!--            <td class="pull-right">
@@ -89,7 +89,7 @@
                     <td colspan="2">
                     <td colspan="10">
                         <div id="accordion<c:out value="${loop.index}" />" class="collapse">
-                            <table width="90%">
+                            <table width="100%">
                                 <tr>
                                     <td valign="top" width="50%">
                                         <table class="table borderless">
@@ -127,22 +127,23 @@
                                             
                                             <table class="table table-bordered" id="tableKontrak<c:out value="${loop.index}" />">
                                                 <tr>
-                                                    <th style="text-align:center" width="33%">Kontrak ke-</th>
-                                                    <th style="text-align:center" width="33%"">Mulai</th>
-                                                    <th style="text-align:center" width="33%">Berakhir</th>
-
+                                                    <th style="text-align:center" width="15%">Ke-</th>
+                                                    <th style="text-align:center" width="28%"">Mulai</th>
+                                                    <th style="text-align:center" width="28%">Berakhir</th>
+                                                    <th style="text-align:center" width="29%">GP Awal</th>
                                                 </tr>
                                                 <c:forEach items="${karyawans.detail_kontrak}" var="kontraks" varStatus="loop2">
                                                     <tr>
-                                                        <td style="text-align:center" width="33%"><c:out value="${loop2.index+1}" /></td>
-                                                        <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_mulai}" /></td>
-                                                        <td style="text-align:center" width="33%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_berakhir}" /></td>
+                                                        <td style="text-align:center" width="15%"><c:out value="${loop2.index+1}" /></td>
+                                                        <td style="text-align:center" width="28%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_mulai}" /></td>
+                                                        <td style="text-align:center" width="28%"><fmt:formatDate type="date" pattern="dd-MM-yyyy" value="${kontraks.tanggal_berakhir}" /></td>
+                                                        <td style="text-align:center" width="29%"><c:out value="${kontraks.gp_awal}" /></td>
                                                         <td class="hidden"><input type="hidden" name="id_karyawan" value="<c:out value="${karyawans.id_karyawan}"/>"></th>
 
                                                     </tr>
                                                 </c:forEach>
                                                 <tr id="tambahKontrak<c:out value="${loop.index}" />">
-                                                    <td colspan="3" style="text-align:center">
+                                                    <td colspan="4" style="text-align:center">
     <!--                                                    <button type="submit" class="btn btn-success btn-add-kontrak" onclick="ClickAddContract(<c:out value='${loop.index}' />)">Tambah Kontrak Baru</button>-->
                                                         <button class="btn btn-success btn-add-kontrak" onclick="addRow(<c:out value='${loop.index}' />)">Tambah Kontrak Baru</button>
                                                     </td>
@@ -212,12 +213,12 @@
         row.className = "tempinput";
         
         //$('#tr_' + idxKar + '_' + (rowCount - 1)').addClass("beroh");
-        row.insertCell(0).innerHTML = '<td style="text-align:center" valign="center" width="33%">' +
+        row.insertCell(0).innerHTML = '<td style="text-align:center" valign="center" width="15%">' +
                 '<button type="submit" id="btn_save_' + idxKar + '_' + (rowCount - 1) + '" class="glyphicon glyphicon-ok glyphicon-positive cursor-pointer"></button>' +
                 '<span id="btn_del_' + idxKar + '_' + (rowCount - 1) + '" class="glyphicon glyphicon-remove glyphicon-negative cursor-pointer" onclick="deleteRow(' + (rowCount - 1) + ',' + idxKar + ')"></span></td>';
-        row.insertCell(1).innerHTML = '<td style="text-align:center" width="33%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakMulai" name="kontrakMulai" placeholder="Kontrak Mulai"></td>';
-        row.insertCell(2).innerHTML = '<td style="text-align:center" width="33%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakBerakhir" name="kontrakBerakhir" placeholder="Kontrak Berakhir"/>' +
-            '<input type="text" class="form-control numberfilter" id="gp" name="gp" placeholder="GP"/></td>';
+        row.insertCell(1).innerHTML = '<td style="text-align:center" width="28%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakMulai" name="kontrakMulai" placeholder="Kontrak Mulai"></td>';
+        row.insertCell(2).innerHTML = '<td style="text-align:center" width="28%"><input type="text" class="form-control datepickerWithYearRange" id="kontrakBerakhir" name="kontrakBerakhir" placeholder="Kontrak Berakhir"/></td>';
+        row.insertCell(3).innerHTML = '<td style="text-align:center" width="29%"><input type="text" class="form-control numberfilter" id="gp" name="gp" placeholder="GP"/></td>';
         //row.insertCell(3).innerHTML = '<td style="text-align:center" width="33%"><input type="text" class="form-control numberfilter" id="gp" name="gp" placeholder="GP"/></td>';
     }
 
@@ -226,9 +227,10 @@
         var rowCount = table.rows.length;
         var row = table.insertRow(rowCount - 1);
         row.id = "tr_" + jobj.indexKe + '_' + (rowCount - 1);
-        row.insertCell(0).innerHTML = '<td style="text-align:center" valign="center" width="33%">' + jobj.kontrakKe + '</td>';
-        row.insertCell(1).innerHTML = '<td style="text-align:center" width="33%">' + jobj.tanggal_mulai + '</td>';
-        row.insertCell(2).innerHTML = '<td style="text-align:center" width="33%">' + jobj.tanggal_berakhir + '</td>';
+        row.insertCell(0).innerHTML = '<td style="text-align:center" valign="center" width="15%">' + jobj.kontrakKe + '</td>';
+        row.insertCell(1).innerHTML = '<td style="text-align:center" width="28%">' + jobj.tanggal_mulai + '</td>';
+        row.insertCell(2).innerHTML = '<td style="text-align:center" width="28%">' + jobj.tanggal_berakhir + '</td>';
+        row.insertCell(3).innerHTML = '<td style="text-align:center" width="29%">' + jobj.gp_awal + '</td>';
         $('.tempinput').empty();
     }
 
@@ -273,8 +275,11 @@
                     }
                 });
     });
-
-
+    
+    function tambahKaryawan() {
+        location.href = "${baseURL}karyawan/input";
+//window.location = "${baseURL}karyawan/input";
+    }
 
 </script>
 <%@include file="/WEB-INF/layout/footer.jsp" %>

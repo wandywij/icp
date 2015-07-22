@@ -30,7 +30,7 @@
         </c:forEach>
     </ul>
 
-    <div class="row">
+<!--    <div class="row">
         <div class="col-xs-8">
             <table class="table">
                 <colgroup>
@@ -55,7 +55,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div>-->
     <!--            <ul class="list-group col-xs-4">
                     <li class="list-group-item">Produksi</li>
                     <li class="list-group-item">Mekanik</li>
